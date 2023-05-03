@@ -8,6 +8,7 @@ public class SpaceTest {
     JFrame frame = new JFrame();
     JPanel reiniciarP = new JPanel();
     int nivel = 1;
+    int pushing = 3;
     Color colorParedes[] = {Color.decode("#3b3a36"), Color.decode("#3b3a36")};
 
     final AudioPlayer[] ap = {null};
