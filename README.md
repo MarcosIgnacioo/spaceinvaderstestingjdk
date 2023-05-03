@@ -1,6 +1,6 @@
 # spaceinvaderstestingjdk
 
 Integrantes:
--Higuera Aguilar 
--Hazael Flores Gastelum
--Marcos Ignacio Camacho Gonzalez
+Higuera Aguilar |
+Hazael Flores Gastelum |
+Marcos Ignacio Camacho Gonzalez
