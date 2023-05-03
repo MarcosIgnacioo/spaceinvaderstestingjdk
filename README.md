@@ -1,4 +1,4 @@
-# spaceinvaderstestingjdk
+# Space Invaders 
 
 Integrantes:
 Higuera Aguilar |
