@@ -8,29 +8,31 @@ public class SpaceTest {
     JFrame frame = new JFrame();
     JPanel reiniciarP = new JPanel();
     int nivel = 1;
-    int pushing = 3;
     Color colorParedes[] = {Color.decode("#3b3a36"), Color.decode("#3b3a36")};
+
 
     final AudioPlayer[] ap = {null};
     final AudioPlayer[] ap2 = {null};
     int jugadorX = 420;
     int jugadorY = 600;
-    int jugadorVelocidad = 20;
+
+    int jugadorVelocidad = 10;
     int jugadorWidth = 10;
     int jugadorHeight= 10;
-    int tecla;
+    int tecla = 100;
     int width = 900;
     int heigth = 900;
     int columnas = 45;
     int filas = 38;
     Rect disparo = null;
-    int disparoX = 0;
-    int disparoY = 0;
-    int disparoWidth = 10;
-    int disparoHeight = 20;
+    int disparoX = 450;
+    int disparoY = 600;
 
-    EjemploRunnable runnable = new EjemploRunnable(disparoY);
+    Bala runnable = new Bala();
     Thread thread = new Thread(runnable);
+    int disparoWidth = 10;
+    int disparoHeight = 10;
+
 
     JLabel tiempoLbl = new JLabel();
 
@@ -51,23 +53,23 @@ public class SpaceTest {
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
@@ -82,18 +84,15 @@ public class SpaceTest {
 
         @Override
         public void paintComponent(Graphics g) {
-            System.out.println("asd" + runnable.getDisparoY());
             jugadorSprite = new Rect(jugadorX, jugadorY,jugadorWidth,jugadorHeight, Color.red);
             super.paintComponent(g);
             g.setColor(jugadorSprite.c);
             g.fillRect(jugadorSprite.x, jugadorSprite.y, jugadorSprite.w, jugadorSprite.h);
             g.setColor(Color.black);
             g.drawRect(jugadorSprite.x, jugadorSprite.y, jugadorSprite.w, jugadorSprite.h);
-            if (disparo != null){
-                g.setColor(disparo.c);
-                g.fillRect(disparo.x, runnable.getDisparoY(), disparo.w, disparo.h);
-            }
             g.setColor(Color.CYAN);
+            disparo = new Rect(disparoX, disparoY, disparoWidth, disparoHeight, Color.black);
+            g.fillRect(disparoX, disparoY, disparoWidth, disparoHeight);
             for (int i = 0; i < mapa.length; i++){
                 for (int j = 0; j< columnas; j++){
                     if (mapa[i][j] == 1){
@@ -104,14 +103,13 @@ public class SpaceTest {
                         g.setColor(Color.RED);
                         g.fillRect(j*20,i*20,20,20);
                     }
-
                 }
             }
         }
     }
 
     public void createGUI() {
-        thread.start();
+        generaMurosColisionadores();
         frame.setLayout(new BorderLayout());
         panel.setBackground(Color.decode("#f9df28"));
         frame.addKeyListener(new KeyListener() {
@@ -122,35 +120,79 @@ public class SpaceTest {
             @Override
             public void keyPressed(KeyEvent e) {
                 tecla = e.getKeyCode();
-                System.out.println(e.getKeyCode());
                 int teclaAnterior;
-                if ((e.getKeyCode() == 65 || e.getKeyCode() == 37)){
+                if ((e.getKeyCode() == 65)){
                     if (!jugadorSprite.colisionLabIzquierda(pLista)){
                         jugadorX -= jugadorVelocidad;
                     }
 
                 }
-                if (e.getKeyCode() == 68 || e.getKeyCode()==39){
+                if (e.getKeyCode() == 68){
                     if (!jugadorSprite.colisionLabDerecha(pLista)){
                         jugadorX += jugadorVelocidad;
                     }
                 }
 
-                if ((e.getKeyCode() == 87 || e.getKeyCode() == 38)){
+                if ((e.getKeyCode() == 87)){
                     if (!jugadorSprite.colisionLabArriba(pLista)){
-                        jugadorY-=jugadorVelocidad;
+                            jugadorY-=jugadorVelocidad;
                     }
                 }
-                if (e.getKeyCode() == 83 || e.getKeyCode() == 40){
+                if (e.getKeyCode() == 83){
                     if (!jugadorSprite.colisionLabAbajo(pLista)){
                         jugadorY+=jugadorVelocidad;
                     }
 
                 }
+
+                if ((e.getKeyCode() == 37)){
+                    if (!disparo.colisionLabIzquierda(pLista)){
+                        disparoX -= jugadorVelocidad;
+                    }
+
+                }
+                if (e.getKeyCode()==39){
+                    if (!disparo.colisionLabDerecha(pLista)){
+                        disparoX += jugadorVelocidad;
+                    }
+                }
+
+                if ((e.getKeyCode() == 38)){
+                    if (!disparo.colisionLabArriba(pLista)){
+                        disparoY -= jugadorVelocidad;
+                    }
+                }
+                if (e.getKeyCode() == 40){
+                    if (!disparo.colisionLabAbajo(pLista)){
+                        disparoY+=jugadorVelocidad;
+                    }
+
+                }
+
                 if (e.getKeyCode() == 32){
-                    disparoX = jugadorX;
-                    disparoY = jugadorY;
-                    disparo = new Rect(disparoX, disparoY, disparoWidth, disparoHeight, Color.black);
+                    if (!jugadorSprite.colisionLabArriba(pLista)){
+                        disparoX = jugadorX;
+                        disparoY = jugadorY;
+                        System.out.println(disparoY);
+                        System.out.println(thread.isAlive());
+                        if(!thread.isAlive()){
+                            thread.start();
+                        }
+                    }
+                    /*if (disparo == null){
+                        disparoX = jugadorX;
+                        disparoY = jugadorY;
+                        disparo = new Rect(disparoX, disparoY, disparoWidth, disparoHeight, Color.black);
+                        generaMurosColisionadores();
+                    }
+                    else{
+                        generaMurosColisionadores();
+                        if (!disparo.colisionAbajo(jugadorSprite)){
+                            System.out.println("wep");
+                            disparoY += 10;
+                        }
+                    }*/
+                    System.out.println();
                 }
                 panel.repaint();
                 panel.revalidate();
@@ -175,6 +217,7 @@ public class SpaceTest {
                 generaMurosColisionadores();
             }
         });
+
         tiempoLbl.setFont(new Font("Arial", Font.BOLD, 30));
         tiempoLbl.setForeground(Color.WHITE);
         reiniciarBtn.setFont(new Font("Arial", Font.BOLD, 30));
@@ -222,7 +265,7 @@ public class SpaceTest {
         }
         public Boolean colisionIzquierda(Rect target){
             if (target != null){
-                if (this.x < target.x + target.w  + jugadorVelocidad&& this.x + this.w> target.x
+                if (this.x < target.x + target.w  + jugadorVelocidad && this.x + this.w> target.x
                         && this.y < target.y + target.h  && this.h +this.y > target.y){
                     return true;
                 }
@@ -326,6 +369,30 @@ public class SpaceTest {
             }
         }
     }
+
+    public class Bala implements Runnable {
+        public Bala(){
+        }
+        public void run() {
+
+            while (!disparo.colisionLabArriba(pLista)) {
+                try {
+                    Thread.sleep(1000); // Espera 1 segundo
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if(!disparo.colisionLabArriba(pLista) && !jugadorSprite.colisionLabArriba(pLista)){
+                    System.out.println(disparoY);
+                    disparoY-=jugadorVelocidad;
+                    panel.repaint();
+                    panel.revalidate();
+                    frame.repaint();
+                    frame.revalidate();
+                }
+            }
+        }
+    }
+
     public static void invertirMatriz(int[][] matriz) {
         int longitud = matriz.length;
         for (int i = 0; i < longitud / 2; i++) {
