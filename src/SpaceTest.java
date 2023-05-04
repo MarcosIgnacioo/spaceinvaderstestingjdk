@@ -8,6 +8,8 @@ public class SpaceTest {
     JFrame frame = new JFrame();
     JPanel reiniciarP = new JPanel();
     int nivel = 1;
+    int iColisioanda;
+    int jColisionada;
     Color colorParedes[] = {Color.decode("#3b3a36"), Color.decode("#3b3a36")};
 
 
@@ -168,14 +170,16 @@ public class SpaceTest {
                     }
 
                 }
-
+                int popo = 0;
                 if (e.getKeyCode() == 32){
                     if (!jugadorSprite.colisionLabArriba(pLista)){
                         disparoX = jugadorX;
                         disparoY = jugadorY;
+                        panel.repaint();
+                        panel.revalidate();
                         System.out.println(disparoY);
                         System.out.println(thread.isAlive());
-                        if(!thread.isAlive()){
+                        if (!thread.isAlive()){
                             thread.start();
                         }
                     }
@@ -319,6 +323,24 @@ public class SpaceTest {
             }
             return false;
         }
+        public Boolean colisionLabArribaBala(Rect target[][]){
+            for (int i = 0; i < mapa.length; i++){
+                for (int j = 0; j< columnas; j++){
+                    if (this.colisionArriba(target[i][j]) == true && target[i][j] != null){
+                        System.out.println(i);
+                        System.out.println(j);
+                        iColisioanda = i;
+                        jColisionada = j;
+                        if (target[i][j].c.equals(Color.RED)){
+                            victoriaRoyal();
+                            return false;
+                        }
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
 
         public Boolean colisionLabAbajo(Rect target[][]){
             for (int i = 0; i < mapa.length; i++){
@@ -375,20 +397,24 @@ public class SpaceTest {
         }
         public void run() {
 
-            while (!disparo.colisionLabArriba(pLista)) {
+            while (true) {
                 try {
-                    Thread.sleep(1000); // Espera 1 segundo
+                    Thread.sleep(500); // Espera 1 segundo
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                if(!disparo.colisionLabArriba(pLista) && !jugadorSprite.colisionLabArriba(pLista)){
+                System.out.println("Esta vive");
+                System.out.println("i: " + iColisioanda + " j: " + jColisionada);
+                if(!disparo.colisionLabArribaBala(pLista) && !jugadorSprite.colisionLabArriba(pLista)){
                     System.out.println(disparoY);
-                    disparoY-=jugadorVelocidad;
+                    pLista[iColisioanda][jColisionada] = null;
+                    mapa[iColisioanda][jColisionada] = 0;
                     panel.repaint();
                     panel.revalidate();
                     frame.repaint();
                     frame.revalidate();
                 }
+                disparoY-=jugadorVelocidad;
             }
         }
     }
