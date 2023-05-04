@@ -4,7 +4,8 @@ import java.util.Random;
 import javax.swing.*;
 
 public class SpaceTest {
-    int oowo = 0;
+
+    int elMarcos;
     JPanel panel = new JPanel();
     JFrame frame = new JFrame();
     JPanel reiniciarP = new JPanel();
