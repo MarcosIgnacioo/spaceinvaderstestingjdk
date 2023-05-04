@@ -4,43 +4,41 @@ import java.util.Random;
 import javax.swing.*;
 
 public class SpaceTest {
-
-    int elMarcos;
-    JPanel panel = new JPanel();
+    JPanel panelJuego = new JPanel();
     JFrame frame = new JFrame();
-    JPanel reiniciarP = new JPanel();
+    JPanel panelInferior = new JPanel();
     int nivel = 1;
     int iColisioanda;
     int jColisionada;
     Color colorParedes[] = {Color.decode("#3b3a36"), Color.decode("#3b3a36")};
 
+    int jugadorX = 420; // POSISICION X INICIAL DEL JUGADOR
+    int jugadorY = 650; // POSICION Y INICIAL DEL JUGADOS
 
-    final AudioPlayer[] ap = {null};
-    final AudioPlayer[] ap2 = {null};
-    int jugadorX = 420;
-    int jugadorY = 600;
+    int jugadorVelocidad = 10; // VELOCIDAD DEL JUGADOR
+    int jugadorWidth = 10; // TAMANO DEL JUGADOR
+    int jugadorHeight= 10; // TAMANO DEL JUGADOR
 
-    int jugadorVelocidad = 10;
-    int jugadorWidth = 10;
-    int jugadorHeight= 10;
-    int tecla = 100;
-    int width = 900;
-    int heigth = 900;
-    int columnas = 45;
-    int filas = 38;
-    Rect disparo = null;
+    int tecla = 100; // NO SE QUE ES
+    int width = 900; // TAMPOCO SE QUE ES
+
+    int heigth = 900; // TAMPOCO SE QUE ES
+    int columnas = 45; // COLUMNAS DE LA MATRIZ
+    int filas = 38; // FILAS DE LA MATRIZ
+
+    Rect disparo = null; // UNA VARIABLE RECT QUE SERA UTILIZADA PARA EL DISPARO
     int disparoX = 450;
     int disparoY = 600;
 
-    Bala runnable = new Bala();
-    Thread thread = new Thread(runnable);
-    int disparoWidth = 10;
-    int disparoHeight = 10;
+    Bala runnable = new Bala(); // NO SE QUE ES
+    Thread thread = new Thread(runnable); // UN HILITO
+    int disparoWidth = 5; // ANCHO DEL DISPARO
+    int disparoHeight = 15; // ALTO DEL DISPARO
 
+    JLabel tiempoLbl = new JLabel(); // JLabel para el tiempo nada mas
+    Rect jugadorSprite; // Sprite para el jugador
 
-    JLabel tiempoLbl = new JLabel();
-
-    Rect jugadorSprite;
+    //Matriz del mapa, 1 == Muro, 0 == Vacio ---------------------------------------------------------------------------------------------------------
     int mapa[][] = {
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -66,7 +64,7 @@ public class SpaceTest {
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -80,12 +78,14 @@ public class SpaceTest {
 
             ,};
 
-    Rect pLista[][] = new Rect[filas][columnas];
+    // FIN MATRIZ DEL MAPA --------------------------------------------------------------------------------------------------------------------------------------
+
+    Rect pLista[][] = new Rect[filas][columnas]; // Sigo intentando agarrar la logica
+
     public class MyGraphics extends JComponent {
         MyGraphics() {
             setPreferredSize(new Dimension(width, heigth));
         }
-
         @Override
         public void paintComponent(Graphics g) {
             jugadorSprite = new Rect(jugadorX, jugadorY,jugadorWidth,jugadorHeight, Color.red);
@@ -115,7 +115,8 @@ public class SpaceTest {
     public void createGUI() {
         generaMurosColisionadores();
         frame.setLayout(new BorderLayout());
-        panel.setBackground(Color.decode("#f9df28"));
+        panelJuego.setBackground(Color.decode("#f9df28"));
+
         frame.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -142,6 +143,7 @@ public class SpaceTest {
                             jugadorY-=jugadorVelocidad;
                     }
                 }
+
                 if (e.getKeyCode() == 83){
                     if (!jugadorSprite.colisionLabAbajo(pLista)){
                         jugadorY+=jugadorVelocidad;
@@ -177,31 +179,18 @@ public class SpaceTest {
                     if (!jugadorSprite.colisionLabArriba(pLista)){
                         disparoX = jugadorX;
                         disparoY = jugadorY;
-                        panel.repaint();
-                        panel.revalidate();
+                        panelJuego.repaint();
+                        panelJuego.revalidate();
                         System.out.println(disparoY);
                         System.out.println(thread.isAlive());
                         if (!thread.isAlive()){
                             thread.start();
                         }
                     }
-                    /*if (disparo == null){
-                        disparoX = jugadorX;
-                        disparoY = jugadorY;
-                        disparo = new Rect(disparoX, disparoY, disparoWidth, disparoHeight, Color.black);
-                        generaMurosColisionadores();
-                    }
-                    else{
-                        generaMurosColisionadores();
-                        if (!disparo.colisionAbajo(jugadorSprite)){
-                            System.out.println("wep");
-                            disparoY += 10;
-                        }
-                    }*/
                     System.out.println();
                 }
-                panel.repaint();
-                panel.revalidate();
+                panelJuego.repaint();
+                panelJuego.revalidate();
             }
 
             @Override
@@ -209,6 +198,7 @@ public class SpaceTest {
 
             }
         });
+
         JButton reiniciarBtn = new JButton("Reiniciar");
         reiniciarBtn.addActionListener(new ActionListener() {
             @Override
@@ -216,39 +206,59 @@ public class SpaceTest {
                 Random rnd = new Random();
                 int rn = rnd.nextInt(100);
                 System.out.println(rn);
-                if (rn >= 50){
-                    cambiarLab();
-                }
-                resetearPosicion();
+                reiniciarPosicion();
                 generaMurosColisionadores();
             }
         });
 
+        //HACER QUE APAREZCA EN EL CENTRO, AUNQUE NO FUNCIONA XD
+        frame.setLocationRelativeTo(null);
+
+        //INICIALIZAR TEXTO PARA EL TIEMPO
         tiempoLbl.setFont(new Font("Arial", Font.BOLD, 30));
         tiempoLbl.setForeground(Color.WHITE);
+
+        //INICIALIZAR EL BOTON DE REINICIAR
         reiniciarBtn.setFont(new Font("Arial", Font.BOLD, 30));
         reiniciarBtn.setForeground(Color.BLACK);
+
+        //INICIAR EL CRONOMETRO
         Cronometro.iniciar(tiempoLbl);
-        panel.add(new MyGraphics());
-        panel.setPreferredSize(new Dimension(900,900));
-        reiniciarP.setLayout(new BorderLayout());
-        reiniciarP.setBackground(Color.decode("#3b3a36"));
-        reiniciarP.add(reiniciarBtn, BorderLayout.EAST);
-        reiniciarP.add(tiempoLbl, BorderLayout.WEST);
-        frame.setFocusable(true);
-        frame.requestFocus();
-        reiniciarP.setPreferredSize(new Dimension(500,100));
-        frame.add(reiniciarP, BorderLayout.SOUTH);
-        frame.add(panel, BorderLayout.CENTER);
-        frame.setLocationRelativeTo(null);
+
+        //AL PANEL DONDE SE ENCUENTRA NUESTRO JUEGO LE AGREGAMOS LOS ELEMENTOS VISUALES
+        panelJuego.add(new MyGraphics());
+        panelJuego.setPreferredSize(new Dimension(900,900));
+
+        //ELEMENTOS PARA EL PANEL INFERIOR
+        panelInferior.setLayout(new BorderLayout());
+        panelInferior.setBackground(Color.decode("#3b3a36"));
+        panelInferior.add(reiniciarBtn, BorderLayout.EAST);
+        panelInferior.add(tiempoLbl, BorderLayout.WEST);
+        panelInferior.setPreferredSize(new Dimension(500,100));
+
+        frame.setFocusable(true); // HACEMOS QUE SE PUEDA INTERACTUAR CON EL TECLADO
+        frame.requestFocus(); // MAS DE LO MISMO
+
+        //SELECCIONAMOS LOS BORDES DE NUESTRA VENTANA
+        frame.add(panelInferior, BorderLayout.SOUTH);
+        frame.add(panelJuego, BorderLayout.CENTER);
+
+        //TAMANO DE LA VENTANA
         frame.setPreferredSize(new Dimension(900,900));
         frame.pack();
+
+        //SET VISIBLE - CERRAR LA EJECUCION UNA VEZ QUE SE CIERRE
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        //REPAINT Y REVALIDATE
         frame.repaint();
         frame.revalidate();
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
+
+
+    //CLASE RECT
     public class Rect{
         int x =0;
         int y = 0;
@@ -262,6 +272,7 @@ public class SpaceTest {
             this.h = h;
             this.c = c;
         }
+
         public void weAreSetting(int x, int y, int w, int h, Color c){
             this.x = x;
             this.y = y;
@@ -269,6 +280,7 @@ public class SpaceTest {
             this.h = h;
             this.c = c;
         }
+
         public Boolean colisionIzquierda(Rect target){
             if (target != null){
                 if (this.x < target.x + target.w  + jugadorVelocidad && this.x + this.w> target.x
@@ -281,6 +293,7 @@ public class SpaceTest {
         }
         public Boolean colisionDerecha(Rect target){
             if (target != null){
+
                 if (this.x < target.x + target.w   && this.x + this.w + jugadorVelocidad > target.x
                         && this.y < target.y + target.h  && this.h +this.y > target.y){
                     return true;
@@ -316,7 +329,8 @@ public class SpaceTest {
                 for (int j = 0; j< columnas; j++){
                     if (this.colisionArriba(target[i][j]) == true && target[i][j] != null){
                         if (target[i][j].c.equals(Color.RED)){
-                            victoriaRoyal();
+                            //victoriaRoyal();
+                            //GANASTE
                             return false;
                         }
                         return true;
@@ -334,7 +348,8 @@ public class SpaceTest {
                         iColisioanda = i;
                         jColisionada = j;
                         if (target[i][j].c.equals(Color.RED)){
-                            victoriaRoyal();
+                            //GANASTE
+                            //victoriaRoyal();
                             return false;
                         }
                         return true;
@@ -349,7 +364,7 @@ public class SpaceTest {
                 for (int j = 0; j< columnas; j++){
                     if (this.colisionAbajo(target[i][j]) == true && target[i][j] != null){
                         if (target[i][j].c.equals(Color.RED)){
-                            victoriaRoyal();
+                            //GANASTE
                             return false;
                         }
                         return true;
@@ -358,6 +373,7 @@ public class SpaceTest {
             }
             return false;
         }
+
         public Boolean colisionLabIzquierda(Rect target[][]){
             for (int i = 0; i < mapa.length; i++){
                 for (int j = 0; j< columnas; j++){
@@ -368,6 +384,7 @@ public class SpaceTest {
             }
             return false;
         }
+
         public Boolean colisionLabDerecha(Rect target[][]){
             for (int i = 0; i < mapa.length; i++){
                 for (int j = 0; j< columnas; j++){
@@ -379,6 +396,7 @@ public class SpaceTest {
             return false;
         }
     }
+
     public void generaMurosColisionadores(){
         for (int i = 0; i < mapa.length; i++){
             for (int j = 0; j< columnas; j++){
@@ -411,8 +429,8 @@ public class SpaceTest {
                     System.out.println(disparoY);
                     pLista[iColisioanda][jColisionada] = null;
                     mapa[iColisioanda][jColisionada] = 0;
-                    panel.repaint();
-                    panel.revalidate();
+                    panelJuego.repaint();
+                    panelJuego.revalidate();
                     frame.repaint();
                     frame.revalidate();
                 }
@@ -421,60 +439,26 @@ public class SpaceTest {
         }
     }
 
-    public static void invertirMatriz(int[][] matriz) {
-        int longitud = matriz.length;
-        for (int i = 0; i < longitud / 2; i++) {
-            int[] temp = matriz[i];
-            matriz[i] = matriz[longitud - i - 1];
-            matriz[longitud - i - 1] = temp;
-        }
-    }
-    public void victoriaRoyal(){
-        Cronometro.detener();
-        if (nivel == 1){
-            nivel =2;
-            JOptionPane.showMessageDialog(null, "Ganast en este tiempo " + tiempoLbl.getText(), "WIN", JOptionPane.INFORMATION_MESSAGE);
-            panel.setBackground(Color.decode("#d7fe0c"));
-        }
-        else{
-            nivel = 1;
-            Cronometro.detener();
-            JOptionPane.showMessageDialog(null, "Ganast en este tiempo " + tiempoLbl.getText(), "WIN", JOptionPane.INFORMATION_MESSAGE);
-            panel.setBackground(Color.decode("#f9df28"));
-        }
-        invertirMatriz(mapa);
-        generaMurosColisionadores();
-        resetearPosicion();
-    }// haza eres un
-    public void resetearPosicion(){
+
+
+    public void reiniciarPosicion(){
         Cronometro.reiniciar(tiempoLbl);
         Cronometro.iniciar(tiempoLbl);
         if (nivel == 1){
             jugadorX = 420;
-            jugadorY = 30;
+            jugadorY = 650;
         }
         else{
             jugadorX = 430;
             jugadorY = 650;
         }
-        panel.repaint();
-        panel.revalidate();
+        panelJuego.repaint();
+        panelJuego.revalidate();
         frame.setFocusable(true);
         frame.requestFocus();
     }
-    public void cambiarLab(){
-        if (nivel == 1){
-            nivel =2;
-            panel.setBackground(Color.decode("#d7fe0c"));
-        }
-        else{
-            nivel = 1;
-            panel.setBackground(Color.decode("#f9df28"));
-        }
-        invertirMatriz(mapa);
-        generaMurosColisionadores();
-        resetearPosicion();
-    }
+
+
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
 
