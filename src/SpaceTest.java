@@ -4,6 +4,7 @@ import java.util.Random;
 import javax.swing.*;
 
 public class SpaceTest {
+    int oowo = 0;
     JPanel panel = new JPanel();
     JFrame frame = new JFrame();
     JPanel reiniciarP = new JPanel();
@@ -443,7 +444,7 @@ public class SpaceTest {
         invertirMatriz(mapa);
         generaMurosColisionadores();
         resetearPosicion();
-    }
+    }// haza eres un
     public void resetearPosicion(){
         Cronometro.reiniciar(tiempoLbl);
         Cronometro.iniciar(tiempoLbl);
