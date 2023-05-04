@@ -36,7 +36,7 @@ public class SpaceTest {
     Bala runnable = new Bala();
     Thread thread = new Thread(runnable);
     int disparoWidth = 10;
-    int disparoHeight = 10;
+    int disparoHeight = 20;
     int bloqueActualizadorX = 0;
     int getBloqueActualizadorY = 0;
 
@@ -98,8 +98,10 @@ public class SpaceTest {
             g.setColor(Color.black);
             g.drawRect(jugadorSprite.x, jugadorSprite.y, jugadorSprite.w, jugadorSprite.h);
             g.setColor(Color.CYAN);
-            disparo = new Rect(disparoX, disparoY, disparoWidth, disparoHeight, Color.black);
-            g.fillRect(disparoX, disparoY, disparoWidth, disparoHeight);
+            if (isDisparando){
+                disparo = new Rect(disparoX, disparoY, disparoWidth, disparoHeight, Color.black);
+                g.fillRect(disparoX, disparoY, disparoWidth, disparoHeight);
+            }
             for (int i = 0; i < mapa.length; i++){
                 for (int j = 0; j< columnas; j++){
                     if (mapa[i][j] == 1){
