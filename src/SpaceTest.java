@@ -19,6 +19,7 @@ public class SpaceTest {
     final AudioPlayer[] ap2 = {null};
     int jugadorX = 420;
     int jugadorY = 600;
+    boolean isDisparando = false;
 
     int jugadorVelocidad = 10;
     int jugadorWidth = 10;
@@ -36,6 +37,8 @@ public class SpaceTest {
     Thread thread = new Thread(runnable);
     int disparoWidth = 10;
     int disparoHeight = 10;
+    int bloqueActualizadorX = 0;
+    int getBloqueActualizadorY = 0;
 
 
     JLabel tiempoLbl = new JLabel();
@@ -175,6 +178,7 @@ public class SpaceTest {
                 int popo = 0;
                 if (e.getKeyCode() == 32){
                     if (!jugadorSprite.colisionLabArriba(pLista)){
+                        isDisparando = true;
                         disparoX = jugadorX;
                         disparoY = jugadorY;
                         panel.repaint();
@@ -398,27 +402,40 @@ public class SpaceTest {
         public Bala(){
         }
         public void run() {
+            boolean hiloMotor = true;
 
-            while (true) {
+            do{
                 try {
-                    Thread.sleep(500); // Espera 1 segundo
+                    Thread.sleep(250); // Espera 1 segundo
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                System.out.println("Esta vive");
-                System.out.println("i: " + iColisioanda + " j: " + jColisionada);
-                if(!disparo.colisionLabArribaBala(pLista) && !jugadorSprite.colisionLabArriba(pLista)){
+                if(!disparo.colisionLabArribaBala(pLista) && !jugadorSprite.colisionLabArriba(pLista) && isDisparando){
+                    disparoY-=jugadorVelocidad;
                     System.out.println(disparoY);
-                    pLista[iColisioanda][jColisionada] = null;
-                    mapa[iColisioanda][jColisionada] = 0;
                     panel.repaint();
                     panel.revalidate();
-                    frame.repaint();
-                    frame.revalidate();
+                    actualizarPaint();
                 }
-                disparoY-=jugadorVelocidad;
-            }
+                else{
+                    mapa[iColisioanda][jColisionada] = 0;
+                    pLista[iColisioanda][jColisionada] = null;
+                    disparoX = jugadorX;
+                    disparoY = jugadorY;
+                    actualizarPaint();
+                    hiloMotor = false;
+                    panel.repaint();
+                    panel.revalidate();
+                    isDisparando = false;
+                    //resetea la posicion de la bala o hazla null para ver si eso actualiza el pinchi graphics
+                }
+            } while (true);
         }
+    }
+    public void actualizarPaint(){
+        bloqueActualizadorX +=1;
+        getBloqueActualizadorY +=1;
+        System.out.println(bloqueActualizadorX);
     }
 
     public static void invertirMatriz(int[][] matriz) {
