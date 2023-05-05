@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.*;
 
@@ -13,14 +14,14 @@ public class SpaceTest {
     int iColisioanda;
     int jColisionada;
     Color colorParedes[] = {Color.decode("#3b3a36"), Color.decode("#3b3a36")};
-
-
     final AudioPlayer[] ap = {null};
     final AudioPlayer[] ap2 = {null};
     int jugadorX = 420;
     int jugadorY = 600;
     boolean isDisparando = false;
+    boolean isDisparandoEnemigo = false;
 
+    boolean reseteaDisparo = false;
     int jugadorVelocidad = 10;
     int jugadorWidth = 10;
     int jugadorHeight= 10;
@@ -30,11 +31,19 @@ public class SpaceTest {
     int columnas = 45;
     int filas = 38;
     Rect disparo = null;
+    Rect disparoEnemigo = null;
+    int disparoEnemigoX = 0;
+    int disparoEnemigoY = 0;
+    int disparoEnemigoWidth = 10;
+    int disparoEnemigoHeight = 20;
     int disparoX = 450;
     int disparoY = 600;
 
     Bala runnable = new Bala();
     Thread thread = new Thread(runnable);
+
+    BalaEnemiga runnable2 = new BalaEnemiga();
+    Thread thread2 = new Thread(runnable2);
     int disparoWidth = 10;
     int disparoHeight = 20;
     int bloqueActualizadorX = 0;
@@ -44,8 +53,27 @@ public class SpaceTest {
     JLabel tiempoLbl = new JLabel();
 
     Rect jugadorSprite;
+
     int mapa[][] = {
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -56,27 +84,9 @@ public class SpaceTest {
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
@@ -102,15 +112,19 @@ public class SpaceTest {
                 disparo = new Rect(disparoX, disparoY, disparoWidth, disparoHeight, Color.black);
                 g.fillRect(disparoX, disparoY, disparoWidth, disparoHeight);
             }
+            disparoEnemigo = new Rect(disparoEnemigoX,disparoEnemigoY,disparoEnemigoWidth, disparoEnemigoHeight, Color.RED);
+            g.setColor(disparoEnemigo.c);
+            g.fillRect(disparoEnemigoX, disparoEnemigoY, disparoEnemigoWidth, disparoEnemigoHeight);
+
             for (int i = 0; i < mapa.length; i++){
                 for (int j = 0; j< columnas; j++){
                     if (mapa[i][j] == 1){
                         g.setColor(colorParedes[nivel-1]);
-                        g.fillRect(j*20,i*20,20,20);
+                        g.fillRect(j*20,i*20,20*2,20*2);
                     }
                     else if (mapa[i][j] == 2){
                         g.setColor(Color.RED);
-                        g.fillRect(j*20,i*20,20,20);
+                        g.fillRect(j*20,i*20,20*2,20*2);
                     }
                 }
             }
@@ -180,13 +194,13 @@ public class SpaceTest {
                 int popo = 0;
                 if (e.getKeyCode() == 32){
                     if (!jugadorSprite.colisionLabArriba(pLista)){
-                        isDisparando = true;
-                        disparoX = jugadorX;
-                        disparoY = jugadorY;
-                        panel.repaint();
-                        panel.revalidate();
-                        System.out.println(disparoY);
-                        System.out.println(thread.isAlive());
+                        if (!isDisparando){
+                            isDisparando = true;
+                            disparoX = jugadorX;
+                            disparoY = jugadorY;
+                            panel.repaint();
+                            panel.revalidate();
+                        }
                         if (!thread.isAlive()){
                             thread.start();
                         }
@@ -204,7 +218,6 @@ public class SpaceTest {
                             disparoY += 10;
                         }
                     }*/
-                    System.out.println();
                 }
                 panel.repaint();
                 panel.revalidate();
@@ -221,7 +234,6 @@ public class SpaceTest {
             public void actionPerformed(ActionEvent e) {
                 Random rnd = new Random();
                 int rn = rnd.nextInt(100);
-                System.out.println(rn);
                 if (rn >= 50){
                     cambiarLab();
                 }
@@ -254,6 +266,7 @@ public class SpaceTest {
         frame.repaint();
         frame.revalidate();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        thread2.start();
     }
     public class Rect{
         int x =0;
@@ -335,8 +348,6 @@ public class SpaceTest {
             for (int i = 0; i < mapa.length; i++){
                 for (int j = 0; j< columnas; j++){
                     if (this.colisionArriba(target[i][j]) == true && target[i][j] != null){
-                        System.out.println(i);
-                        System.out.println(j);
                         iColisioanda = i;
                         jColisionada = j;
                         if (target[i][j].c.equals(Color.RED)){
@@ -390,11 +401,11 @@ public class SpaceTest {
             for (int j = 0; j< columnas; j++){
                 pLista[i][j] = null;
                 if (mapa[i][j] == 1){
-                    pLista[i][j] = new Rect(j*20, i*20, 20,20, Color.CYAN);
+                    pLista[i][j] = new Rect(j*20, i*20, 20*2,20*2, Color.CYAN);
                     //g.fillRect(j*20,i*20,20,20);
                 }
                 else if (mapa[i][j] == 2){
-                    pLista[i][j] = new Rect(j*20, i*20, 20,20, Color.RED);
+                    pLista[i][j] = new Rect(j*20, i*20, 20*2,20*2, Color.RED);
                 }
             }
         }
@@ -408,18 +419,30 @@ public class SpaceTest {
 
             do{
                 try {
-                    Thread.sleep(250); // Espera 1 segundo
+                    Thread.sleep(15); // Espera 1 segundo
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
                 if(!disparo.colisionLabArribaBala(pLista) && !jugadorSprite.colisionLabArriba(pLista) && isDisparando){
                     disparoY-=jugadorVelocidad;
-                    System.out.println(disparoY);
                     panel.repaint();
                     panel.revalidate();
                     actualizarPaint();
+                    if(disparoY < 0){
+                        System.out.println("owo");
+                        disparoX = jugadorX;
+                        disparoY = jugadorY;
+                        actualizarPaint();
+                        hiloMotor = false;
+                        panel.repaint();
+                        panel.revalidate();
+                        isDisparando = false;
+                    }
                 }
+
                 else{
+                    System.out.println("whastapp");
                     mapa[iColisioanda][jColisionada] = 0;
                     pLista[iColisioanda][jColisionada] = null;
                     disparoX = jugadorX;
@@ -434,10 +457,100 @@ public class SpaceTest {
             } while (true);
         }
     }
+
+
+    public class BalaEnemiga implements Runnable {
+        public BalaEnemiga(){
+        }
+        public void run() {
+            isDisparandoEnemigo = true;
+            Random rnd = new Random();
+            ArrayList<Integer> posiciones = new ArrayList<Integer>();
+            posiciones = generadorDePosicionDeBalasEnemigasAleatorio();
+            int posicionRandom = rnd.nextInt(posiciones.size()-1);
+            disparoEnemigoX = posiciones.get(posicionRandom)*20;
+            disparoEnemigoY = posiciones.get(posicionRandom+1)*20;
+            do{
+                posiciones = generadorDePosicionDeBalasEnemigasAleatorio();
+                try {
+                    Thread.sleep(15); // Espera 1 segundo
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(disparoEnemigoX);
+                System.out.println(disparoEnemigoY);
+
+                if(disparoEnemigo !=null && !disparoEnemigo.colisionAbajo(jugadorSprite)){
+                    disparoEnemigoY+=jugadorVelocidad;
+                    panel.repaint();
+                    panel.revalidate();
+                    actualizarPaint();
+                    if(disparoEnemigoY > 620){
+                        posicionRandom = rnd.nextInt(posiciones.size()-1);
+                        disparoEnemigoX = posiciones.get(posicionRandom)*20;
+                        disparoEnemigoY = posiciones.get(posicionRandom+1)*20;
+                        System.out.println(disparoEnemigoX);
+                        System.out.println(disparoEnemigoY);
+                        panel.repaint();
+                        panel.revalidate();
+                    }
+                }
+                else{
+                    posicionRandom = rnd.nextInt(posiciones.size()-1);
+                    disparoEnemigoX = posiciones.get(posicionRandom)*20;
+                    disparoEnemigoY = posiciones.get(posicionRandom+1)*20;
+                    System.out.println("mepego");
+                    panel.repaint();
+                    panel.revalidate();
+                    //resetea la posicion de la bala o hazla null para ver si eso actualiza el pinchi graphics
+                }
+            } while (true);
+        }
+    }
+    public ArrayList<Integer> generadorDePosicionDeBalasEnemigasAleatorio(){
+        int popo =0;
+        Random rnd = new Random();
+        ArrayList<Integer> posicionesUno = new ArrayList<Integer>();
+        for(int i = 0; i < mapa.length; i++){
+            for (int j = 0; j < mapa[0].length; j++){
+                if(mapa[i][j] == 1){
+                    System.out.println("i: "+ i + " j: "+ j);
+                    posicionesUno.add((i));
+                    posicionesUno.add((j));
+                }
+            }
+        }
+        return posicionesUno;
+    }
+
+    public class EnemigosMovimiento implements Runnable {
+        public EnemigosMovimiento(){
+        }
+        public void run() {
+            boolean hiloMotor = true;
+            do{
+                try {
+                    Thread.sleep(1000); // Espera 1 segundo
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                for (int i = 0; i < mapa.length - 1; i++){
+                    for (int j = 0; j < mapa[0].length; j++){
+                        if (mapa[i][j] == 1 && mapa[i+1][j] == 0){
+
+                        }
+                    }
+                }
+                generaMurosColisionadores();
+                panel.repaint();
+                panel.revalidate();
+            } while (true);
+        }
+    }
     public void actualizarPaint(){
         bloqueActualizadorX +=1;
         getBloqueActualizadorY +=1;
-        System.out.println(bloqueActualizadorX);
     }
 
     public static void invertirMatriz(int[][] matriz) {
