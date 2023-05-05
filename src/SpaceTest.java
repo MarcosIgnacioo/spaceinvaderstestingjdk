@@ -14,13 +14,14 @@ public class SpaceTest {
     int iColisioanda;
     int jColisionada;
     Color colorParedes[] = {Color.decode("#3b3a36"), Color.decode("#3b3a36")};
+    Color colorBala = Color.red;
+    int listaEnemigos[] = new int[1000];
     final AudioPlayer[] ap = {null};
     final AudioPlayer[] ap2 = {null};
     int jugadorX = 420;
     int jugadorY = 600;
     boolean isDisparando = false;
     boolean isDisparandoEnemigo = false;
-
     boolean reseteaDisparo = false;
     int jugadorVelocidad = 10;
     int jugadorWidth = 10;
@@ -92,7 +93,7 @@ public class SpaceTest {
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 
             ,};
-
+    int it = 0;
     Rect pLista[][] = new Rect[filas][columnas];
     public class MyGraphics extends JComponent {
         MyGraphics() {
@@ -112,9 +113,11 @@ public class SpaceTest {
                 disparo = new Rect(disparoX, disparoY, disparoWidth, disparoHeight, Color.black);
                 g.fillRect(disparoX, disparoY, disparoWidth, disparoHeight);
             }
-            disparoEnemigo = new Rect(disparoEnemigoX,disparoEnemigoY,disparoEnemigoWidth, disparoEnemigoHeight, Color.RED);
-            g.setColor(disparoEnemigo.c);
-            g.fillRect(disparoEnemigoX, disparoEnemigoY, disparoEnemigoWidth, disparoEnemigoHeight);
+            if (isDisparandoEnemigo){
+                disparoEnemigo = new Rect(disparoEnemigoX,disparoEnemigoY,disparoEnemigoWidth, disparoEnemigoHeight, colorBala);
+                g.setColor(disparoEnemigo.c);
+                g.fillRect(disparoEnemigoX, disparoEnemigoY, disparoEnemigoWidth, disparoEnemigoHeight);
+            }
 
             for (int i = 0; i < mapa.length; i++){
                 for (int j = 0; j< columnas; j++){
@@ -267,6 +270,9 @@ public class SpaceTest {
         frame.revalidate();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         thread2.start();
+        EnemigosMovimiento ep = new EnemigosMovimiento();
+        Thread th = new Thread(ep);
+        th.start();
     }
     public class Rect{
         int x =0;
@@ -430,7 +436,6 @@ public class SpaceTest {
                     panel.revalidate();
                     actualizarPaint();
                     if(disparoY < 0){
-                        System.out.println("owo");
                         disparoX = jugadorX;
                         disparoY = jugadorY;
                         actualizarPaint();
@@ -442,7 +447,6 @@ public class SpaceTest {
                 }
 
                 else{
-                    System.out.println("whastapp");
                     mapa[iColisioanda][jColisionada] = 0;
                     pLista[iColisioanda][jColisionada] = null;
                     disparoX = jugadorX;
@@ -458,93 +462,114 @@ public class SpaceTest {
         }
     }
 
-
     public class BalaEnemiga implements Runnable {
         public BalaEnemiga(){
         }
         public void run() {
             isDisparandoEnemigo = true;
             Random rnd = new Random();
-            ArrayList<Integer> posiciones = new ArrayList<Integer>();
+            ArrayList<Integer> posiciones;
             posiciones = generadorDePosicionDeBalasEnemigasAleatorio();
-            int posicionRandom = rnd.nextInt(posiciones.size()-1);
-            disparoEnemigoX = posiciones.get(posicionRandom)*20;
-            disparoEnemigoY = posiciones.get(posicionRandom+1)*20;
-            do{
-                posiciones = generadorDePosicionDeBalasEnemigasAleatorio();
+            int posicionRandom = rnd.nextInt(((posiciones.size())-1));
+            disparoEnemigoX = posiciones.get(posicionRandom+1);
+            disparoEnemigoY = posiciones.get((posicionRandom));
+            int pop = 0;
+            boolean segundoDisparo = false;
+            do{ // por alguna razon aqui se cambia
+                System.out.println(disparoEnemigoY);
                 try {
                     Thread.sleep(15); // Espera 1 segundo
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                System.out.println(disparoEnemigoX);
-                System.out.println(disparoEnemigoY);
 
-                if(disparoEnemigo !=null && !disparoEnemigo.colisionAbajo(jugadorSprite)){
+                if(disparoEnemigo !=null && !disparoEnemigo.colisionAbajo(jugadorSprite)&& ((disparoEnemigo.colisionLabArriba(pLista)) ||(segundoDisparo))){
+                    colorBala = Color.RED;
                     disparoEnemigoY+=jugadorVelocidad;
                     panel.repaint();
                     panel.revalidate();
                     actualizarPaint();
+                    segundoDisparo = true;
                     if(disparoEnemigoY > 620){
+                        System.out.println("ASDASDASDSAD");
                         posicionRandom = rnd.nextInt(posiciones.size()-1);
-                        disparoEnemigoX = posiciones.get(posicionRandom)*20;
-                        disparoEnemigoY = posiciones.get(posicionRandom+1)*20;
-                        System.out.println(disparoEnemigoX);
-                        System.out.println(disparoEnemigoY);
+                        disparoEnemigoX = posiciones.get(posicionRandom+1);
+                        disparoEnemigoY = posiciones.get(posicionRandom);
                         panel.repaint();
                         panel.revalidate();
+                        segundoDisparo = false;
                     }
                 }
-                else{
+                else if (disparoEnemigo !=null && disparoEnemigo.colisionAbajo(jugadorSprite)){
+                    colorBala = Color.RED;
+                    segundoDisparo = false;
                     posicionRandom = rnd.nextInt(posiciones.size()-1);
-                    disparoEnemigoX = posiciones.get(posicionRandom)*20;
-                    disparoEnemigoY = posiciones.get(posicionRandom+1)*20;
+                    disparoEnemigoX = posiciones.get(posicionRandom+1);
+                    disparoEnemigoY = posiciones.get(posicionRandom);
                     System.out.println("mepego");
                     panel.repaint();
                     panel.revalidate();
                     //resetea la posicion de la bala o hazla null para ver si eso actualiza el pinchi graphics
                 }
+                else{
+                    System.out.println("ASDASDASDSAD");
+                    posicionRandom = rnd.nextInt(posiciones.size()-1);
+                    disparoEnemigoX = posiciones.get(posicionRandom+1);
+                    disparoEnemigoY = posiciones.get(posicionRandom);
+                    panel.repaint();
+                    panel.revalidate();
+                    segundoDisparo = false;
+                }
+                posiciones = generadorDePosicionDeBalasEnemigasAleatorio();
             } while (true);
         }
     }
+
     public ArrayList<Integer> generadorDePosicionDeBalasEnemigasAleatorio(){
         int popo =0;
+        int shit = 0;
+        int pee = 0;
         Random rnd = new Random();
         ArrayList<Integer> posicionesUno = new ArrayList<Integer>();
         for(int i = 0; i < mapa.length; i++){
             for (int j = 0; j < mapa[0].length; j++){
                 if(mapa[i][j] == 1){
-                    System.out.println("i: "+ i + " j: "+ j);
-                    posicionesUno.add((i));
-                    posicionesUno.add((j));
+                    shit = i*20;
+                    pee = j*20;
+                    posicionesUno.add(shit);
+                    posicionesUno.add(pee);
                 }
             }
         }
+
+
         return posicionesUno;
     }
 
     public class EnemigosMovimiento implements Runnable {
+        ArrayList<Integer> posiciones = new ArrayList<Integer>();
+        ArrayList<Integer> posiciones2 = new ArrayList<Integer>();
+        int it = 0;
         public EnemigosMovimiento(){
         }
         public void run() {
             boolean hiloMotor = true;
             do{
                 try {
-                    Thread.sleep(1000); // Espera 1 segundo
+                    Thread.sleep(5000); // Espera 1 segundo
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
-                for (int i = 0; i < mapa.length - 1; i++){
-                    for (int j = 0; j < mapa[0].length; j++){
-                        if (mapa[i][j] == 1 && mapa[i+1][j] == 0){
-
-                        }
-                    }
+                for (int i = mapa.length - 1; i > 0; i--) {
+                    mapa[i] = mapa[i-1];
                 }
-                generaMurosColisionadores();
+                for (int j = 0; j < mapa[0].length; j++) {
+                    mapa[0][j] = 0;
+                }
                 panel.repaint();
                 panel.revalidate();
+                it++;
+                generaMurosColisionadores();
             } while (true);
         }
     }
