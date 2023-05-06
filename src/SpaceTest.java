@@ -18,6 +18,8 @@ public class SpaceTest extends JFrame implements KeyListener{
     int nivel = 1;
     int iColisioanda;
     int jColisionada;
+    int iColisioandaBE;
+    int jColisionadaBE;
     Color colorParedes[] = {Color.decode("#3b3a36"), Color.decode("#3b3a36")};
 
     private Image xwing;
@@ -47,8 +49,8 @@ public class SpaceTest extends JFrame implements KeyListener{
     Rect disparoEnemigo = null;
     Rect disparo = null; // UNA VARIABLE RECT QUE SERA UTILIZADA PARA EL DISPARO
 
-    int disparoEnemigoX = 0;
-    int disparoEnemigoY = 0;
+    int disparoEnemigoX = jugadorX;
+    int disparoEnemigoY = jugadorY;
     int disparoEnemigoWidth = 7; // ANCHO DEL DISPARO VERDE
     int disparoEnemigoHeight = 40; // ALTO DEL DISPARO VERDE
 
@@ -159,8 +161,6 @@ public class SpaceTest extends JFrame implements KeyListener{
     @Override
     public void keyPressed(KeyEvent e) {
         tecla = e.getKeyCode();
-        int teclaAnterior;
-
         //IZQUIERDA
         if ((e.getKeyCode() == 65 && jugadorX > 10)){
             if (!jugadorSprite.colisionLabIzquierda(pLista)){
@@ -168,50 +168,11 @@ public class SpaceTest extends JFrame implements KeyListener{
             }
 
         }
-
         //DERECHA
         if (e.getKeyCode() == 68 && jugadorX < 840){
             if (!jugadorSprite.colisionLabDerecha(pLista)){
                 jugadorX += jugadorVelocidad;
             }
-        }
-
-        //ARRIBA
-        if ((e.getKeyCode() == 87 && jugadorY > 10 )){
-            if (!jugadorSprite.colisionLabArriba(pLista)){
-                jugadorY-=jugadorVelocidad;
-            }
-        }
-        //ABAJO
-        if (e.getKeyCode() == 83 && jugadorY < 700){
-            if (!jugadorSprite.colisionLabAbajo(pLista)){
-                jugadorY+=jugadorVelocidad;
-            }
-
-        }
-
-        if ((e.getKeyCode() == 37)){
-            if (!disparo.colisionLabIzquierda(pLista)){
-                disparoX -= jugadorVelocidad;
-            }
-
-        }
-        if (e.getKeyCode()==39){
-            if (!disparo.colisionLabDerecha(pLista)){
-                disparoX += jugadorVelocidad;
-            }
-        }
-
-        if ((e.getKeyCode() == 38)){
-            if (!disparo.colisionLabArriba(pLista)){
-                disparoY -= jugadorVelocidad;
-            }
-        }
-        if (e.getKeyCode() == 40){
-            if (!disparo.colisionLabAbajo(pLista)){
-                disparoY+=jugadorVelocidad;
-            }
-
         }
 
         if (e.getKeyCode() == 32){
@@ -300,9 +261,11 @@ public class SpaceTest extends JFrame implements KeyListener{
             g.drawRect(jugadorSprite.x, jugadorSprite.y, jugadorSprite.w, jugadorSprite.h);
             super.paintComponent(g);
 
-            g.setColor(Color.RED);
-            disparo = new Rect(disparoX, disparoY, disparoWidth, disparoHeight, Color.black);
-            g.fillRect(disparoX, disparoY, disparoWidth, disparoHeight);
+            if(isDisparando){
+                g.setColor(Color.RED);
+                disparo = new Rect(disparoX, disparoY, disparoWidth, disparoHeight, Color.black);
+                g.fillRect(disparoX, disparoY, disparoWidth, disparoHeight);
+            }
 
             if (isDisparandoEnemigo){
                 disparoEnemigo = new Rect(disparoEnemigoX,disparoEnemigoY,disparoEnemigoWidth, disparoEnemigoHeight, Color.green);
@@ -439,15 +402,21 @@ public class SpaceTest extends JFrame implements KeyListener{
             for (int i = 0; i < mapa.length; i++){
                 for (int j = 0; j< columnas; j++){
                     if (this.colisionArriba(target[i][j]) == true && target[i][j] != null){
-                        System.out.println(i);
-                        System.out.println(j);
                         iColisioanda = i;
                         jColisionada = j;
-                        if (target[i][j].c.equals(Color.RED)){
-                            //GANASTE
-                            //victoriaRoyal();
-                            return false;
-                        }
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public Boolean colisionLabAbajoBalaEnemiga(Rect target[][]){
+            for (int i = 0; i < mapa.length; i++){
+                for (int j = 0; j< columnas; j++){
+                    if (this.colisionAbajo(target[i][j]) == true && target[i][j] != null && mapa[i][j] == 7){
+                        iColisioandaBE = i;
+                        jColisionadaBE = j;
                         return true;
                     }
                 }
@@ -500,9 +469,14 @@ public class SpaceTest extends JFrame implements KeyListener{
 
                 if (mapa[i][j] == 1){
                     pLista[i][j] = new Rect(j*20, i*20, 50,50, Color.CYAN);
-                    //g.fillRect(j*20,i*20,20,20);
                 }
-                else if (mapa[i][j] == 2){
+                if (mapa[i][j] == 4){
+                    pLista[i][j] = new Rect(j*20, i*20, 50,50, Color.RED);
+                }
+                if (mapa[i][j] == 5){
+                    pLista[i][j] = new Rect(j*20, i*20, 50,50, Color.RED);
+                }
+                if (mapa[i][j] == 7){
                     pLista[i][j] = new Rect(j*20, i*20, 50,50, Color.RED);
                 }
             }
@@ -521,7 +495,6 @@ public class SpaceTest extends JFrame implements KeyListener{
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
                 if(!disparo.colisionLabArribaBala(pLista) && !jugadorSprite.colisionLabArriba(pLista) && isDisparando){
                     disparoY-=jugadorVelocidad;
                     panelJuego.repaint();
@@ -539,16 +512,25 @@ public class SpaceTest extends JFrame implements KeyListener{
                 }
 
                 else{
-                    //COLISION DISPARO CON CUADRADO
-                    mapa[iColisioanda][jColisionada] = 0;
-                    pLista[iColisioanda][jColisionada] = null;
-                    disparoX = jugadorX;
-                    disparoY = jugadorY;
-                    actualizarPaint();
-                    hiloMotor = false;
-                    panelJuego.repaint();
-                    panelJuego.revalidate();
-                    isDisparando = false;
+                    if(mapa[iColisioanda][jColisionada] != 7){
+                        //COLISION DISPARO CON CUADRADO
+                        mapa[iColisioanda][jColisionada] = 0;
+                        pLista[iColisioanda][jColisionada] = null;
+                        disparoX = jugadorX;
+                        disparoY = jugadorY;
+                        actualizarPaint();
+                        hiloMotor = false;
+                        panelJuego.repaint();
+                        panelJuego.revalidate();
+                        isDisparando = false;
+                    }
+                    else{
+                        disparoX = jugadorX;
+                        disparoY = jugadorY;
+                        panelJuego.repaint();
+                        panelJuego.revalidate();
+                        isDisparando = false;
+                    }
                     //resetea la posicion de la bala o hazla null para ver si eso actualiza el pinchi graphics
                 }
             } while (true);
@@ -568,21 +550,30 @@ public class SpaceTest extends JFrame implements KeyListener{
             disparoEnemigoY = posiciones.get((posicionRandom));
             int pop = 0;
             boolean segundoDisparo = false;
-            do{ // por alguna razon aqui se cambia
+            Rect testSiVieneDeNave;
+            do{
+                testSiVieneDeNave = new Rect(disparoEnemigoX,disparoEnemigoY,disparoEnemigoWidth,disparoEnemigoHeight,Color.green);
+                while(testSiVieneDeNave != null && !testSiVieneDeNave.colisionLabArriba(pLista) && !segundoDisparo)
+                {
+                    posicionRandom = rnd.nextInt(((posiciones.size())-1));
+                    disparoEnemigoX = posiciones.get(posicionRandom+1);
+                    disparoEnemigoY = posiciones.get((posicionRandom));
+                    testSiVieneDeNave.x = disparoEnemigoX;
+                    testSiVieneDeNave.y = disparoEnemigoY;
+                }
                 try {
                     Thread.sleep(15); // Espera 1 segundo
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
 
-                if(disparoEnemigo !=null && !disparoEnemigo.colisionAbajo(jugadorSprite) && ((disparoEnemigo.colisionLabArriba(pLista)) || (segundoDisparo))){
-                    System.out.println("querollo");
+                if(disparoEnemigo !=null && !disparoEnemigo.colisionAbajo(jugadorSprite) &&
+                  ((disparoEnemigo.colisionLabArriba(pLista)) || (segundoDisparo)) && !disparoEnemigo.colisionLabAbajoBalaEnemiga(pLista)){
                     disparoEnemigoY+=jugadorVelocidad;
                     panelJuego.repaint();
                     panelJuego.revalidate();
                     segundoDisparo = true;
                     if(disparoEnemigoY > 620){
-                        System.out.println("ASDASDASDSAD");
                         posicionRandom = rnd.nextInt(posiciones.size()-1);
                         disparoEnemigoX = posiciones.get(posicionRandom+1);
                         disparoEnemigoY = posiciones.get(posicionRandom);
@@ -597,19 +588,34 @@ public class SpaceTest extends JFrame implements KeyListener{
                     posicionRandom = rnd.nextInt(posiciones.size()-1);
                     disparoEnemigoX = posiciones.get(posicionRandom+1);
                     disparoEnemigoY = posiciones.get(posicionRandom);
-                    System.out.println("mepego");
                     panelJuego.repaint();
                     panelJuego.revalidate();
                     //resetea la posicion de la bala o hazla null para ver si eso actualiza el pinchi graphics
                 }
                 else{
-                    System.out.println("ASDASDASDSAD");
-                    posicionRandom = rnd.nextInt(posiciones.size()-1);
-                    disparoEnemigoX = posiciones.get(posicionRandom+1);
-                    disparoEnemigoY = posiciones.get(posicionRandom);
+                    if(mapa[iColisioandaBE][jColisionadaBE] == 7){
+                        //COLISION DISPARO CON CUADRADO
+                        mapa[iColisioandaBE][jColisionadaBE] = 0;
+                        pLista[iColisioandaBE][jColisionadaBE] = null;
+                        segundoDisparo = false;
+                        posicionRandom = rnd.nextInt(posiciones.size()-1);
+                        disparoEnemigoX = posiciones.get(posicionRandom+1);
+                        disparoEnemigoY = posiciones.get(posicionRandom);
+                        panelJuego.repaint();
+                        panelJuego.revalidate();
+                        actualizarPaint();
+                    }
+                    else{
+                        segundoDisparo = false;
+                        posicionRandom = rnd.nextInt(posiciones.size()-1);
+                        disparoEnemigoX = posiciones.get(posicionRandom+1);
+                        disparoEnemigoY = posiciones.get(posicionRandom);
+                        panelJuego.repaint();
+                        panelJuego.revalidate();
+                    }
                     panelJuego.repaint();
                     panelJuego.revalidate();
-                    segundoDisparo = false;
+                    isDisparando = false;
                 }
                 posiciones = generadorDePosicionDeBalasEnemigasAleatorio();
             } while (true);
@@ -645,10 +651,14 @@ public class SpaceTest extends JFrame implements KeyListener{
                     e.printStackTrace();
                 }
                 for (int i = mapa.length - 1; i > 0; i--) {
-                    mapa[i] = mapa[i-1];
+                    if(mapa[i][0] == 1){
+                        mapa[i] = mapa[i-1];
+                    }
                 }
                 for (int j = 0; j < mapa[0].length; j++) {
-                    mapa[0][j] = 0;
+                    if(mapa[0][j] == 1){
+                        mapa[0][j] = 0;
+                    }
                 }
 
                 panelJuego.repaint();
