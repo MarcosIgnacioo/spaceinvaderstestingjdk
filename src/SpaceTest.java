@@ -15,6 +15,8 @@ public class SpaceTest {
     Color colorParedes[] = {Color.decode("#3b3a36"), Color.decode("#3b3a36")};
 
 
+    
+
     final AudioPlayer[] ap = {null};
     final AudioPlayer[] ap2 = {null};
     int jugadorX = 420;
