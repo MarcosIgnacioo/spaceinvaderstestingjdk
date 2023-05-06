@@ -1,5 +1,15 @@
+import java.awt.EventQueue;
+import java.awt.Image;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                SpaceTest GUI = new SpaceTest();
+                GUI.setVisible(true);
+                //GUI.crearInterfaz();
+            }
+        });
     }
 }
