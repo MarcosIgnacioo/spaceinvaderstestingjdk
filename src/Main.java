@@ -6,8 +6,12 @@ public class Main {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                SpaceTest GUI = new SpaceTest();
-                GUI.setVisible(true);
+
+                Splash sp = new Splash();
+                sp.setVisible(true);
+
+                //SpaceTest GUI = new SpaceTest();
+                //GUI.setVisible(true);
                 //GUI.crearInterfaz();
             }
         });

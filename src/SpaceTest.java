@@ -27,6 +27,7 @@ public class SpaceTest extends JFrame implements KeyListener{
     private Image tieCuatro;
     private Image tieCinco;
     private Image roca;
+    private Image estrellitas;
 
     boolean isDisparando = false;
     boolean isDisparandoEnemigo = false;
@@ -78,7 +79,7 @@ public class SpaceTest extends JFrame implements KeyListener{
         generaMurosColisionadores();
         this.setLayout(new BorderLayout());
 
-        panelJuego.setBackground(Color.decode("#000000"));
+        panelJuego.setBackground(Color.decode("#000000")); // COLOR DEL PANEL
 
 
         try {
@@ -87,6 +88,8 @@ public class SpaceTest extends JFrame implements KeyListener{
             tieCuatro = ImageIO.read(new File("src//sprites//tiefighter4.png"));
             tieCinco = ImageIO.read(new File("src//sprites//tieFighter5.png"));
             roca = ImageIO.read(new File("src//sprites//roca.png"));
+            //estrellitas = ImageIO.read(new File("src//sprites//estrellitas.gif"));
+
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -151,7 +154,6 @@ public class SpaceTest extends JFrame implements KeyListener{
 
     }
 
-
     @Override
     public void keyTyped(KeyEvent e) {
         // TODO Auto-generated method stub
@@ -195,7 +197,6 @@ public class SpaceTest extends JFrame implements KeyListener{
 
     @Override
     public void keyReleased(KeyEvent e) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -242,6 +243,8 @@ public class SpaceTest extends JFrame implements KeyListener{
     // FIN MATRIZ DEL MAPA --------------------------------------------------------------------------------------------------------------------------------------
     Rect pLista[][] = new Rect[filas][columnas]; // Sigo intentando agarrar la logica
 
+    ImageIcon imageIcon = new ImageIcon("src//sprites//estrellita.gif");
+    Image image = imageIcon.getImage();
 
     public class MyGraphics extends JComponent {
         MyGraphics() {
@@ -251,6 +254,8 @@ public class SpaceTest extends JFrame implements KeyListener{
         public void paintComponent(Graphics g) {
 
             //SPRITE DEL JUGADOR
+            //g.drawImage(estrellitas, 0, 0, 900,900, null);
+            g.drawImage(image, 0, 0, 900, 900, this);
             jugadorSprite = new Rect(jugadorX, jugadorY,jugadorWidth, jugadorHeight, Color.black);
             g.drawImage(xwing, jugadorX, jugadorY, 50,50, null);
             g.setColor(jugadorSprite.c);
@@ -280,7 +285,7 @@ public class SpaceTest extends JFrame implements KeyListener{
 
                     //TAMANO DE LA NAVE
                     if (mapa[i][j] == 1){
-                        g.setColor(Color.BLACK);
+                        g.setColor(new Color(0, 0, 0, 0)); // COLOR INVISIBLE
                         g.fillRect(j*20,i*20,40,40);
                         g.drawImage(tie, j*20, i*20, 40,40, null);
                     }
@@ -293,21 +298,21 @@ public class SpaceTest extends JFrame implements KeyListener{
 
                     //NAVE DE ATAQUE
                     if (mapa[i][j] == 4){
-                        g.setColor(Color.BLACK);
+                        g.setColor(new Color(0, 0, 0, 0)); // COLOR INVISIBLE
                         g.fillRect(j*20,i*20,45,45);
                         g.drawImage(tieCuatro, j*20, i*20, 45,45, null);
                     }
 
                     //NAVE ROJA
                     if (mapa[i][j] == 5){
-                        g.setColor(Color.BLACK);
+                        g.setColor(new Color(0, 0, 0, 0)); // COLOR INVISIBLE
                         g.fillRect(j*20,i*20,45,45);
                         g.drawImage(tieCinco, j*20, i*20, 45,45, null);
                     }
 
                     //ROCA
                     if (mapa[i][j] == 7){
-                        g.setColor(Color.BLACK);
+                        g.setColor(new Color(0, 0, 0, 0)); // COLOR INVISIBLE
                         g.fillRect(j*20,i*20,25,25);
                         g.drawImage(roca, j*20, i*20, 25,25, null);
                     }
