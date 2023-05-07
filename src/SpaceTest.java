@@ -53,6 +53,13 @@ public class SpaceTest extends JFrame implements KeyListener{
 
     Rect disparoEnemigo = null;
     Rect disparo = null; // UNA VARIABLE RECT QUE SERA UTILIZADA PARA EL DISPARO
+    Rect estrellaDeLaMuerte = null;
+
+    int estrellaX = 0;
+    int estrellaY = 0;
+    int estrellaW = 40;
+    int estrellaH = 40;
+    Color estrellaC = Color.green;
 
     int disparoEnemigoX = jugadorX;
     int disparoEnemigoY = jugadorY;
@@ -73,6 +80,10 @@ public class SpaceTest extends JFrame implements KeyListener{
 
     VictoriaMagistral runnableVictoriaMagistral = new VictoriaMagistral();
     Thread threadEstadoDelJuego = new Thread(runnableVictoriaMagistral);
+    EstrellaMuerteMov runnableEstrellaMuerte = new EstrellaMuerteMov();
+    Thread threadEstrellaDeLaMuerte = new Thread(runnableEstrellaMuerte);
+
+
 
 
 
@@ -152,6 +163,7 @@ public class SpaceTest extends JFrame implements KeyListener{
         threadBalaEnemiga.start();
         threadEnemigosMovimiento.start();
         threadEstadoDelJuego.start();
+        threadEstrellaDeLaMuerte.start();
 
         JButton reiniciarBtn = new JButton("Reiniciar");
         reiniciarBtn.addActionListener(new ActionListener() {
@@ -332,6 +344,9 @@ public class SpaceTest extends JFrame implements KeyListener{
             g.setColor(Color.ORANGE);
             g.drawString("Puntaje: "+puntaje, 10,10);
             g.drawString("Vidas: "+vidas,10,30);
+            estrellaDeLaMuerte = new Rect(estrellaX,estrellaY,estrellaW,estrellaH, estrellaC);
+            g.setColor(estrellaDeLaMuerte.c);
+            g.fillRect(estrellaDeLaMuerte.x,estrellaDeLaMuerte.y,estrellaDeLaMuerte.w,estrellaDeLaMuerte.h);
             Movimiento();
             super.paintComponent(g);
 
@@ -575,11 +590,12 @@ public class SpaceTest extends JFrame implements KeyListener{
         public void run() {
             boolean hitBala = false;
             boolean hitParry = false;
+            boolean hitNave = false;
             Random rnd = new Random();
 
             do{
                 if (disparo != null){
-
+                    hitNave = disparo.colisionArriba(estrellaDeLaMuerte);
                     hitBala = disparo.colisionLabArribaBala(pLista);
                     hitParry = disparo.colisionArriba(disparoEnemigo);
                 }
@@ -587,6 +603,19 @@ public class SpaceTest extends JFrame implements KeyListener{
                     Thread.sleep(15); // Espera 1 segundo
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                }
+                if (hitNave){
+                    puntaje += 1000;
+                    disparo.x = jugadorX;
+                    disparo.y = jugadorY;
+                    disparoX = jugadorX;
+                    disparoY = jugadorY;
+                    estrellaX = 0;
+                    estrellaY = 0;
+                    panelJuego.repaint();
+                    panelJuego.revalidate();
+                    hitBala = false;
+                    isDisparando = false;
                 }
                 if (hitParry){
                     int posicionRandom = rnd.nextInt(posiciones.size() - 1);
@@ -662,6 +691,7 @@ public class SpaceTest extends JFrame implements KeyListener{
             Rect testSiVieneDeNave;
             while(juegoEncendido){
                 if (posiciones.size() == 0){
+                    //GANASTE AQUI ESTA AZAAAAAAAAAAAAAAA GANAR EVENTO
                     JOptionPane.showMessageDialog(null,"Ganaste","GG", JOptionPane.INFORMATION_MESSAGE);
                     Izq = false;
                     Der = false;
@@ -804,6 +834,7 @@ public class SpaceTest extends JFrame implements KeyListener{
                     e.printStackTrace();
                 }
                 if (vidas == 0 || pisoActual > 350){
+                    // PERDISTE EVENTO aqui esta owoo
                     JOptionPane.showMessageDialog(null,"Perdiste","GG", JOptionPane.INFORMATION_MESSAGE);
                     Izq = false;
                     Der = false;
@@ -811,6 +842,48 @@ public class SpaceTest extends JFrame implements KeyListener{
                     reiniciarJuego();
                 }
                 juegoEncendido = true;
+            }
+        }
+    }
+
+    public class EstrellaMuerteMov implements Runnable {
+        public EstrellaMuerteMov(){
+
+        }
+        public void run() {
+            boolean izquierda = false;
+            boolean derecha = true;
+
+            while (true){
+                while (derecha){
+                    try {
+                        Thread.sleep(15); // Espera 1 segundo
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    estrellaX += 10;
+                    if (estrellaX > 880){
+                        izquierda = true;
+                        derecha = false;
+                    }
+                    panelJuego.repaint();
+                    panelJuego.revalidate();
+                }
+
+                while (izquierda){
+                    try {
+                        Thread.sleep(15); // Espera 1 segundo
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    estrellaX -= 10;
+                    if (estrellaX < 0){
+                        izquierda = false;
+                        derecha = true;
+                    }
+                    panelJuego.repaint();
+                    panelJuego.revalidate();
+                }
             }
         }
     }
