@@ -2,6 +2,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.Random;
 import javax.imageio.ImageIO;
@@ -9,12 +10,14 @@ import javax.swing.*;
 
 public class SpaceTest extends JFrame implements KeyListener{
 
+    private boolean Izq = false , Der = false;
     private Timer movimientoTimer;
     JPanel panelJuego = new JPanel();
     JFrame frame = new JFrame();
     JPanel reiniciarP = new JPanel();
     JPanel panelInferior = new JPanel();
-
+    //implementacion de las vidas y el puntaje
+    int puntaje = 0, vidas = 3;
     int nivel = 1;
     int iColisioanda;
     int jColisionada;
@@ -36,7 +39,7 @@ public class SpaceTest extends JFrame implements KeyListener{
     int jugadorY = 650; // POSICION Y INICIAL DEL JUGADOS
 
     int jugadorVelocidad = 10; // VELOCIDAD DEL JUGADOR
-    int jugadorWidth = 15; // TAMANO DEL JUGADOR
+    int jugadorWidth = 50; // TAMANO DEL JUGADOR
     int jugadorHeight= 15; // TAMANO DEL JUGADOR
 
     int tecla = 100; // NO SE QUE ES
@@ -120,7 +123,10 @@ public class SpaceTest extends JFrame implements KeyListener{
         this.add(panelJuego, BorderLayout.CENTER);
 
         //TAMANO DE LA VENTANA
-        this.setPreferredSize(new Dimension(900,900));
+        int x=java.awt.Toolkit.getDefaultToolkit().getScreenSize().width,
+            y=java.awt.Toolkit.getDefaultToolkit().getScreenSize().height;
+        this.setBounds((x-900)/2,0,900,1100);
+        this.setPreferredSize(new Dimension(900,1100));
         this.pack();
 
         //SET VISIBLE - CERRAR LA EJECUCION UNA VEZ QUE SE CIERRE
@@ -151,6 +157,15 @@ public class SpaceTest extends JFrame implements KeyListener{
 
     }
 
+    private void Movimiento(){
+        if (!jugadorSprite.colisionLabIzquierda(pLista) && Izq && jugadorX > 10){
+            jugadorX -= jugadorVelocidad;
+        }
+
+        if (!jugadorSprite.colisionLabDerecha(pLista) && Der && jugadorX < 840){
+            jugadorX += jugadorVelocidad;
+        }
+    }
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -162,17 +177,12 @@ public class SpaceTest extends JFrame implements KeyListener{
     public void keyPressed(KeyEvent e) {
         tecla = e.getKeyCode();
         //IZQUIERDA
-        if ((e.getKeyCode() == 65 && jugadorX > 10)){
-            if (!jugadorSprite.colisionLabIzquierda(pLista)){
-                jugadorX -= jugadorVelocidad;
-            }
-
+        if ((e.getKeyCode() == KeyEvent.VK_A)){
+            Izq = true;
         }
         //DERECHA
-        if (e.getKeyCode() == 68 && jugadorX < 840){
-            if (!jugadorSprite.colisionLabDerecha(pLista)){
-                jugadorX += jugadorVelocidad;
-            }
+        if (e.getKeyCode() == KeyEvent.VK_D){
+            Der = true;
         }
 
         if (e.getKeyCode() == 32){
@@ -196,7 +206,14 @@ public class SpaceTest extends JFrame implements KeyListener{
     @Override
     public void keyReleased(KeyEvent e) {
         // TODO Auto-generated method stub
-
+        //IZQUIERDA
+        if ((e.getKeyCode() == KeyEvent.VK_A)){
+            Izq = false;
+        }
+        //DERECHA
+        if (e.getKeyCode() == KeyEvent.VK_D){
+            Der = false;
+        }
     }
 
     //Matriz del mapa, 1 == Muro, 0 == Vacio ---------------------------------------------------------------------------------------------------------
@@ -259,6 +276,11 @@ public class SpaceTest extends JFrame implements KeyListener{
             g.setColor(Color.black);
 
             g.drawRect(jugadorSprite.x, jugadorSprite.y, jugadorSprite.w, jugadorSprite.h);
+
+            g.setColor(Color.ORANGE);
+            g.drawString("Puntaje: "+puntaje, 10,10);
+            g.drawString("Vidas: "+vidas,10,30);
+            Movimiento();
             super.paintComponent(g);
 
             if(isDisparando){
@@ -372,8 +394,8 @@ public class SpaceTest extends JFrame implements KeyListener{
         //COLISION DE ABAJO
         public Boolean colisionAbajo(Rect target){
             if (target != null){
-                if (this.x < target.x + target.w   && this.x + this.w > target.x
-                        && this.y < target.y + target.h && this.h +this.y + jugadorVelocidad > target.y){
+                if (this.x <= target.x + target.w   && this.x + this.w >= target.x
+                        && this.y <= target.y + target.h && this.h +this.y + jugadorVelocidad >= target.y){
                     return true;
                 }
                 return false;
@@ -404,6 +426,9 @@ public class SpaceTest extends JFrame implements KeyListener{
                     if (this.colisionArriba(target[i][j]) == true && target[i][j] != null){
                         iColisioanda = i;
                         jColisionada = j;
+                        //Implementacion de la obtencion de puntos
+                        if(mapa[i][j] != 7)
+                            puntaje += (100*mapa[i][j]);
                         return true;
                     }
                 }
@@ -532,6 +557,7 @@ public class SpaceTest extends JFrame implements KeyListener{
                         isDisparando = false;
                     }
                     //resetea la posicion de la bala o hazla null para ver si eso actualiza el pinchi graphics
+                    //resetea la posicion de la bala o hazla null para ver si eso actualiza el pinchi graphics
                 }
             } while (true);
         }
@@ -584,6 +610,7 @@ public class SpaceTest extends JFrame implements KeyListener{
                 }
                 else if (disparoEnemigo !=null && disparoEnemigo.colisionAbajo(jugadorSprite)){
                     //COLISION DISPARO CON EL JUGADOR
+                    vidas--;
                     segundoDisparo = false;
                     posicionRandom = rnd.nextInt(posiciones.size()-1);
                     disparoEnemigoX = posiciones.get(posicionRandom+1);
