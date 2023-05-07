@@ -59,7 +59,7 @@ public class Splash extends JDialog {
                     while (x <= 100) {
                         barra.setValue(x);
                         x++;
-                        Thread.sleep(952); // 952
+                        Thread.sleep(50); // 952 50
 
                         if (x == 5) {
                             texto = "Cargando...";
