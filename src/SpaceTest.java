@@ -2,7 +2,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.Random;
 import javax.imageio.ImageIO;
@@ -13,11 +12,13 @@ public class SpaceTest extends JFrame implements KeyListener{
     private boolean Izq = false , Der = false;
     private Timer movimientoTimer;
     JPanel panelJuego = new JPanel();
+    int pisoActual = 0;
     JFrame frame = new JFrame();
     JPanel reiniciarP = new JPanel();
     JPanel panelInferior = new JPanel();
     //implementacion de las vidas y el puntaje
-    int puntaje = 0, vidas = 3;
+    int puntaje = 0, vidas = 1000;
+    int navesExplotadas = 0;
     int nivel = 1;
     int iColisioanda;
     int jColisionada;
@@ -34,7 +35,7 @@ public class SpaceTest extends JFrame implements KeyListener{
 
     boolean isDisparando = false;
     boolean isDisparandoEnemigo = false;
-    boolean reseteaDisparo = false;
+    boolean juegoEncendido = false;
 
     int jugadorX = 420; // POSISICION X INICIAL DEL JUGADOR
     int jugadorY = 650; // POSICION Y INICIAL DEL JUGADOS
@@ -74,6 +75,7 @@ public class SpaceTest extends JFrame implements KeyListener{
     int disparoHeight = 15; // ALTO DEL DISPARO
     int bloqueActualizadorX = 0;
     int getBloqueActualizadorY = 0;
+
 
     JLabel tiempoLbl = new JLabel(); // JLabel para el tiempo nada mas
     Rect jugadorSprite; // Sprite para el jugador
@@ -264,13 +266,13 @@ public class SpaceTest extends JFrame implements KeyListener{
     ImageIcon imageIcon = new ImageIcon("src//sprites//estrellita.gif");
     Image image = imageIcon.getImage();
 
+
     public class MyGraphics extends JComponent {
         MyGraphics() {
             setPreferredSize(new Dimension(width, heigth));
         }
         @Override
         public void paintComponent(Graphics g) {
-
             //SPRITE DEL JUGADOR
             g.drawImage(image, 0, 0, 900, 900, this);
             jugadorSprite = new Rect(jugadorX, jugadorY,jugadorWidth, jugadorHeight, new Color(0, 0, 0, 0));
@@ -507,7 +509,7 @@ public class SpaceTest extends JFrame implements KeyListener{
                     pLista[i][j] = new Rect(j*20, i*20, 50,50, Color.RED);
                 }
                 if (mapa[i][j] == 7){
-                    pLista[i][j] = new Rect(j*20, i*20, 50,50, Color.RED);
+                    pLista[i][j] = new Rect(j*20, i*20, 25,25, Color.RED);
                 }
             }
         }
@@ -517,15 +519,18 @@ public class SpaceTest extends JFrame implements KeyListener{
         public Bala(){
         }
         public void run() {
-            boolean hiloMotor = true;
+            boolean hitBala = false;
 
             do{
+                if (disparo != null){
+                    hitBala = disparo.colisionLabArribaBala(pLista);
+                }
                 try {
                     Thread.sleep(15); // Espera 1 segundo
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                if(!disparo.colisionLabArribaBala(pLista) && !jugadorSprite.colisionLabArriba(pLista) && isDisparando){
+                if(!hitBala && !jugadorSprite.colisionLabArriba(pLista) && isDisparando){
                     disparoY-=jugadorVelocidad;
                     panelJuego.repaint();
                     panelJuego.revalidate();
@@ -533,36 +538,29 @@ public class SpaceTest extends JFrame implements KeyListener{
                     if(disparoY < 0){
                         disparoX = jugadorX;
                         disparoY = jugadorY;
-                        actualizarPaint();
-                        hiloMotor = false;
                         panelJuego.repaint();
                         panelJuego.revalidate();
                         isDisparando = false;
                     }
                 }
 
-                else{
+                else if (hitBala){
                     if(mapa[iColisioanda][jColisionada] != 7){
+                        navesExplotadas++;
                         //COLISION DISPARO CON CUADRADO
                         mapa[iColisioanda][jColisionada] = 0;
                         pLista[iColisioanda][jColisionada] = null;
                         disparoX = jugadorX;
                         disparoY = jugadorY;
-                        actualizarPaint();
-                        hiloMotor = false;
-                        panelJuego.repaint();
-                        panelJuego.revalidate();
-                        isDisparando = false;
+                        hitBala = false;
                     }
                     else{
                         disparoX = jugadorX;
                         disparoY = jugadorY;
-                        panelJuego.repaint();
-                        panelJuego.revalidate();
-                        isDisparando = false;
                     }
-                    //resetea la posicion de la bala o hazla null para ver si eso actualiza el pinchi graphics
-                    //resetea la posicion de la bala o hazla null para ver si eso actualiza el pinchi graphics
+                    panelJuego.repaint();
+                    panelJuego.revalidate();
+                    isDisparando = false;
                 }
             } while (true);
         }
@@ -570,6 +568,7 @@ public class SpaceTest extends JFrame implements KeyListener{
 
     public class BalaEnemiga implements Runnable {
         public BalaEnemiga(){
+            juegoEncendido = true;
         }
         public void run() {
             isDisparandoEnemigo = true;
@@ -604,7 +603,7 @@ public class SpaceTest extends JFrame implements KeyListener{
                     panelJuego.repaint();
                     panelJuego.revalidate();
                     segundoDisparo = true;
-                    if(disparoEnemigoY > 620){
+                    if(disparoEnemigoY > 700){
                         posicionRandom = rnd.nextInt(posiciones.size()-1);
                         disparoEnemigoX = posiciones.get(posicionRandom+1);
                         disparoEnemigoY = posiciones.get(posicionRandom);
@@ -622,35 +621,19 @@ public class SpaceTest extends JFrame implements KeyListener{
                     disparoEnemigoY = posiciones.get(posicionRandom);
                     panelJuego.repaint();
                     panelJuego.revalidate();
-                    //resetea la posicion de la bala o hazla null para ver si eso actualiza el pinchi graphics
                 }
-                else{
-                    if(mapa[iColisioandaBE][jColisionadaBE] == 7){
-                        //COLISION DISPARO CON CUADRADO
-                        mapa[iColisioandaBE][jColisionadaBE] = 0;
-                        pLista[iColisioandaBE][jColisionadaBE] = null;
-                        segundoDisparo = false;
-                        posicionRandom = rnd.nextInt(posiciones.size()-1);
-                        disparoEnemigoX = posiciones.get(posicionRandom+1);
-                        disparoEnemigoY = posiciones.get(posicionRandom);
-                        panelJuego.repaint();
-                        panelJuego.revalidate();
-                        actualizarPaint();
-                    }
-                    else{
-                        segundoDisparo = false;
-                        posicionRandom = rnd.nextInt(posiciones.size()-1);
-                        disparoEnemigoX = posiciones.get(posicionRandom+1);
-                        disparoEnemigoY = posiciones.get(posicionRandom);
-                        panelJuego.repaint();
-                        panelJuego.revalidate();
-                    }
+                else if (mapa[iColisioandaBE][jColisionadaBE] == 7){
+                    mapa[iColisioandaBE][jColisionadaBE] = 0;
+                    pLista[iColisioandaBE][jColisionadaBE] = null;
+                    posicionRandom = rnd.nextInt(posiciones.size()-1);
+                    disparoEnemigoX = posiciones.get(posicionRandom+1);
+                    disparoEnemigoY = posiciones.get(posicionRandom);
                     panelJuego.repaint();
                     panelJuego.revalidate();
-                    isDisparando = false;
+                    segundoDisparo = false;
                 }
                 posiciones = generadorDePosicionDeBalasEnemigasAleatorio();
-            } while (true);
+            } while (juegoEncendido);
         }
     }
 
@@ -674,30 +657,105 @@ public class SpaceTest extends JFrame implements KeyListener{
 
     public class EnemigosMovimiento implements Runnable {
         public EnemigosMovimiento(){
+            juegoEncendido = true;
         }
         public void run() {
             do{
                 try {
-                    Thread.sleep(3000); // Espera 1 segundo
+                    Thread.sleep(1000); // Espera 1 segundo
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                for (int i = mapa.length - 1; i > 0; i--) {
-                    if(mapa[i][0] == 1){
-                        mapa[i] = mapa[i-1];
-                    }
-                }
-                for (int j = 0; j < mapa[0].length; j++) {
-                    if(mapa[0][j] == 1){
-                        mapa[0][j] = 0;
+
+                int numRows = mapa.length;
+                int numCols = mapa[0].length;
+
+                for (int i = 0; i < numRows; i++) {
+                    for (int j = numCols - 2; j >= 0; j--) {
+                        if (mapa[i][j] == 1 || mapa[i][j] == 4 || mapa[i][j] == 5) {
+                            int mov = mapa[i][j];
+                            mapa[i][j] = 0;
+                            mapa[i][(j+1)%numCols] = mov;
+                        }
                     }
                 }
 
+                for (int i = numRows - 2; i >= 0; i--) {
+                    if (mapa[i][numCols-1] == 1 || mapa[i][numCols-1] == 4 || mapa[i][numCols-1] == 5) {
+                        pisoActual++;
+                        int mov = mapa[i][numCols-1];
+                        mapa[i][numCols - 1] = 0;
+                        mapa[i + 1][0] = mov;
+                    }
+                }
                 panelJuego.repaint();
                 panelJuego.revalidate();
                 generaMurosColisionadores();
-            } while (true);
+            } while (juegoEncendido);
         }
+    }
+
+    public void checarSiPerdiste(){
+        if (pisoActual == 558 || vidas == 0){
+            JOptionPane.showMessageDialog(null, "Perdist", "P", JOptionPane.INFORMATION_MESSAGE);
+            reiniciarJuego();
+        }
+    }
+
+
+    public boolean checarSiGanaste(){
+            for (int i = 0; i<mapa.length; i++){
+                for (int j = 0; j<mapa[0].length; j++){
+                    if (mapa[i][j] != 0){
+                        return false;
+                    }
+                }
+            }
+        return true;
+    }
+    public void reiniciarJuego(){
+        pisoActual = 0;
+        vidas = 3;
+        puntaje = 0;
+        mapa = new int[][]{
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0}, //PRIMER LINEA DE TIE FIGHTERS
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 5, 0, 0, 4, 0, 0, 4, 0, 0, 4, 0, 0, 5, 0, 0, 4, 0, 0, 4, 0, 0, 4, 0, 0, 5, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0}, //SEGUNDA LINEA MIXTA
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0}, // TERCERA LINEA
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
+        generaMurosColisionadores();
+        panelJuego.repaint();
+        panelJuego.revalidate();
     }
 
     public void actualizarPaint(){
