@@ -33,6 +33,8 @@ public class SpaceTest extends JFrame implements KeyListener{
     private Image roca;
     private Image estrellita;
 
+    private Image estrellaMuerte;
+
     boolean isDisparando = false;
     boolean isDisparandoEnemigo = false;
     boolean juegoEncendido = false;
@@ -57,9 +59,9 @@ public class SpaceTest extends JFrame implements KeyListener{
 
     int estrellaX = 0;
     int estrellaY = 0;
-    int estrellaW = 40;
-    int estrellaH = 40;
-    Color estrellaC = Color.green;
+    int estrellaW = 60;
+    int estrellaH = 60;
+    Color estrellaC = new Color(0, 0, 0, 0);
 
     int disparoEnemigoX = jugadorX;
     int disparoEnemigoY = jugadorY;
@@ -110,6 +112,7 @@ public class SpaceTest extends JFrame implements KeyListener{
             tieCinco = ImageIO.read(new File("src//sprites//tieFighter5.png"));
             roca = ImageIO.read(new File("src//sprites//roca.png"));
             estrellita = ImageIO.read(new File("src//sprites//estrellita.gif"));
+            estrellaMuerte = ImageIO.read(new File("src//sprites//estrellaMuerte.png"));
 
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -146,8 +149,8 @@ public class SpaceTest extends JFrame implements KeyListener{
         //TAMANO DE LA VENTANA
         int x=java.awt.Toolkit.getDefaultToolkit().getScreenSize().width,
                 y=java.awt.Toolkit.getDefaultToolkit().getScreenSize().height;
-        this.setBounds((x-900)/2,0,900,1100);
-        this.setPreferredSize(new Dimension(900,1100));
+        this.setBounds((x-900)/2,0,900,900);
+        this.setPreferredSize(new Dimension(900,900));
         this.pack();
 
         //SET VISIBLE - CERRAR LA EJECUCION UNA VEZ QUE SE CIERRE
@@ -345,6 +348,10 @@ public class SpaceTest extends JFrame implements KeyListener{
             g.drawString("Puntaje: "+puntaje, 10,10);
             g.drawString("Vidas: "+vidas,10,30);
             estrellaDeLaMuerte = new Rect(estrellaX,estrellaY,estrellaW,estrellaH, estrellaC);
+
+            estrellaDeLaMuerte = new Rect(estrellaX,estrellaY,estrellaW,estrellaH, estrellaC);
+            g.drawImage(estrellaMuerte, estrellaDeLaMuerte.x, estrellaDeLaMuerte.y, estrellaW,estrellaH, null);
+
             g.setColor(estrellaDeLaMuerte.c);
             g.fillRect(estrellaDeLaMuerte.x,estrellaDeLaMuerte.y,estrellaDeLaMuerte.w,estrellaDeLaMuerte.h);
             Movimiento();
