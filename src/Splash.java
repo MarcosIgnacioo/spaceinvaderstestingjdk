@@ -7,7 +7,7 @@ public class Splash extends JDialog {
 
     private JProgressBar barra;
     private JLabel l2;
-
+    private AudioPlayer audio;
     //PROPIEDADES DIALOOGO
     public Splash() {
         inicio();
@@ -28,6 +28,8 @@ public class Splash extends JDialog {
         //Imagen de fondo
         ImageIcon imagen = new ImageIcon("src//sprites//introLetras.gif");
         JLabel etiqueta = new JLabel(imagen);
+
+        audio = new AudioPlayer("src//sonidos//starswarstheme.wav",true);
 
         // Agrega la etiqueta al panel
         etiqueta.setSize(1054, 558);
@@ -72,9 +74,11 @@ public class Splash extends JDialog {
                     }
 
                     ImageIcon imagen = new ImageIcon("src//sprites//MenuPro.png");
+
                     // Crea el objeto JLabel
                     JLabel etiqueta = new JLabel(imagen);
-
+                    audio.detener();
+                    audio = new AudioPlayer("src//sonidos//menumusic.wav",true);
                     etiqueta.setSize(1054, 900);
                     etiqueta.setLocation(0, 0);
 
@@ -98,6 +102,8 @@ public class Splash extends JDialog {
 
                     play.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
+                            {AudioPlayer efecto = new AudioPlayer("src//sonidos//pressbutton.wav",false);}
+                            audio.detener();
                             dispose();
                             SpaceTest v1 = new SpaceTest();
                             v1.setVisible(true);
@@ -106,6 +112,7 @@ public class Splash extends JDialog {
                     });
                     salir.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
+                            {AudioPlayer efecto = new AudioPlayer("src//sonidos//pressbutton.wav",false);}
                             dispose();
                             System.exit(0);
                         }

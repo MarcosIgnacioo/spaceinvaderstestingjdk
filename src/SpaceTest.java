@@ -12,6 +12,7 @@ public class SpaceTest extends JFrame implements KeyListener{
 
     private boolean Izq = false , Der = false;
     private Timer movimientoTimer;
+    private AudioPlayer backgroundMS;
     JPanel panelJuego = new JPanel();
     JFrame frame = new JFrame();
     JPanel reiniciarP = new JPanel();
@@ -84,7 +85,6 @@ public class SpaceTest extends JFrame implements KeyListener{
 
         panelJuego.setBackground(Color.decode("#000000"));
 
-
         try {
             xwing = ImageIO.read(new File("src//sprites//navepro.png"));
             tie = ImageIO.read(new File("src//sprites//tiefighter.png"));
@@ -142,6 +142,7 @@ public class SpaceTest extends JFrame implements KeyListener{
         this.revalidate();
 
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        backgroundMS = new AudioPlayer("src//sonidos//menumusic.wav",true);//musica de fondo mamalona para el juego (cambiar)
         threadBalaEnemiga.start();
         threadEnemigosMovimiento.start();
 
@@ -188,7 +189,7 @@ public class SpaceTest extends JFrame implements KeyListener{
             Der = true;
         }
 
-        if (e.getKeyCode() == 32){
+        if (e.getKeyCode() == KeyEvent.VK_SPACE){
             if (!jugadorSprite.colisionLabArriba(pLista)){
                 if (!isDisparando){
                     isDisparando = true;
@@ -292,12 +293,14 @@ public class SpaceTest extends JFrame implements KeyListener{
                 g.setColor(Color.RED);
                 disparo = new Rect(disparoX, disparoY, disparoWidth, disparoHeight, Color.black);
                 g.fillRect(disparoX, disparoY, disparoWidth, disparoHeight);
+                {AudioPlayer efecto = new AudioPlayer("src//sonidos//jugadordisparo.wav",false);}
             }
 
             if (isDisparandoEnemigo){
                 disparoEnemigo = new Rect(disparoEnemigoX,disparoEnemigoY,disparoEnemigoWidth, disparoEnemigoHeight, Color.green);
                 g.setColor(disparoEnemigo.c);
                 g.fillRect(disparoEnemigoX, disparoEnemigoY, disparoEnemigoWidth, disparoEnemigoHeight);
+                {AudioPlayer efecto = new AudioPlayer("src//sonidos//disparoenemigo.wav",false);}
             }
 
 
@@ -434,6 +437,7 @@ public class SpaceTest extends JFrame implements KeyListener{
                         //Implementacion de la obtencion de puntos
                         if(mapa[i][j] != 7)
                             puntaje += (100*mapa[i][j]);
+                        {AudioPlayer efecto = new AudioPlayer("src//sonidos//impactojugador.wav",false);}
                         return true;
                     }
                 }
@@ -616,6 +620,7 @@ public class SpaceTest extends JFrame implements KeyListener{
                 else if (disparoEnemigo !=null && disparoEnemigo.colisionAbajo(jugadorSprite)){
                     //COLISION DISPARO CON EL JUGADOR
                     vidas--;
+                    {AudioPlayer efecto = new AudioPlayer("src//sonidos//impactojugador.wav",false);}
                     segundoDisparo = false;
                     posicionRandom = rnd.nextInt(posiciones.size()-1);
                     disparoEnemigoX = posiciones.get(posicionRandom+1);
