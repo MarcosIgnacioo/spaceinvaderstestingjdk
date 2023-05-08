@@ -17,7 +17,7 @@ public class SpaceTest extends JFrame implements KeyListener{
     JPanel reiniciarP = new JPanel();
     JPanel panelInferior = new JPanel();
     //implementacion de las vidas y el puntaje
-    int puntaje = 0, vidas = 10000;
+    int puntaje = 0, vidas = 3;
     int navesExplotadas = 0;
     int nivel = 1;
     int iColisioanda;
@@ -53,6 +53,10 @@ public class SpaceTest extends JFrame implements KeyListener{
     int columnas = 45; // COLUMNAS DE LA MATRIZ
     int filas = 38; // FILAS DE LA MATRIZ
 
+
+    ImageIcon vida2 = new ImageIcon("src//sprites//vidas2.png");
+    ImageIcon vidaUno = new ImageIcon("src//sprites//vidas3.png");
+
     Rect disparoEnemigo = null;
     Rect disparo = null; // UNA VARIABLE RECT QUE SERA UTILIZADA PARA EL DISPARO
     Rect estrellaDeLaMuerte = null;
@@ -62,6 +66,8 @@ public class SpaceTest extends JFrame implements KeyListener{
     int estrellaW = 60;
     int estrellaH = 60;
     Color estrellaC = new Color(0, 0, 0, 0);
+
+    JLabel etiqueta;
 
     int disparoEnemigoX = jugadorX;
     int disparoEnemigoY = jugadorY;
@@ -84,6 +90,7 @@ public class SpaceTest extends JFrame implements KeyListener{
     Thread threadEstadoDelJuego = new Thread(runnableVictoriaMagistral);
     EstrellaMuerteMov runnableEstrellaMuerte = new EstrellaMuerteMov();
     Thread threadEstrellaDeLaMuerte = new Thread(runnableEstrellaMuerte);
+
 
 
 
@@ -134,10 +141,24 @@ public class SpaceTest extends JFrame implements KeyListener{
         panelJuego.setPreferredSize(new Dimension(900, 900));
 
         //ELEMENTOS PARA EL PANEL INFERIOR
-        panelInferior.setLayout(new BorderLayout());
-        panelInferior.setBackground(Color.decode("#2d2d2d"));
+        panelInferior.setLayout(null);
+        //panelInferior.setBackground(Color.decode("#2d2d2d"));
         panelInferior.add(tiempoLbl, BorderLayout.WEST);
         panelInferior.setPreferredSize(new Dimension(500,50));
+
+
+        //Imagen de fondo
+        etiqueta = new JLabel(vidaUno);
+        etiqueta.setSize(900, 50);
+        etiqueta.setLocation(0, 0);
+        panelInferior.add(etiqueta);
+
+        /*
+        JLabel etiqueta2 = new JLabel(vida2);
+        etiqueta2.setSize(900, 50);
+        etiqueta2.setLocation(0, 0);
+         */
+
 
         this.setFocusable(true); // HACEMOS QUE SE PUEDA INTERACTUAR CON EL TECLADO
         this.requestFocus(); // MAS DE LO MISMO
@@ -167,6 +188,7 @@ public class SpaceTest extends JFrame implements KeyListener{
         threadEnemigosMovimiento.start();
         threadEstadoDelJuego.start();
         threadEstrellaDeLaMuerte.start();
+
 
         JButton reiniciarBtn = new JButton("Reiniciar");
         reiniciarBtn.addActionListener(new ActionListener() {
@@ -566,6 +588,7 @@ public class SpaceTest extends JFrame implements KeyListener{
         for (int i = 0; i < mapa.length; i++){
             for (int j = 0; j< columnas; j++){
                 int vida =  3;
+
                 if (pLista[i][j] != null){
                     vida =  pLista[i][j].v;
                 }
@@ -591,6 +614,8 @@ public class SpaceTest extends JFrame implements KeyListener{
         }
     }
 
+
+
     public class Bala implements Runnable {
         public Bala(){
         }
@@ -607,7 +632,7 @@ public class SpaceTest extends JFrame implements KeyListener{
                     hitParry = disparo.colisionArriba(disparoEnemigo);
                 }
                 try {
-                    Thread.sleep(15); // Espera 1 segundo
+                    Thread.sleep(7); // Espera 1 segundo
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -718,7 +743,7 @@ public class SpaceTest extends JFrame implements KeyListener{
                     testSiVieneDeNave.y = disparoEnemigoY;
                 }
                 try {
-                    Thread.sleep(15); // Espera 1 segundo
+                    Thread.sleep(7); // Espera 1 segundo
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -741,6 +766,17 @@ public class SpaceTest extends JFrame implements KeyListener{
                 else if (disparoEnemigo !=null && disparoEnemigo.colisionAbajo(jugadorSprite)){
                     //COLISION DISPARO CON EL JUGADOR
                     vidas--;
+
+                    if (vidas == 2){
+                        System.out.println("Hola");
+                        etiqueta = new JLabel(vida2);
+                        etiqueta.setSize(900, 50);
+                        etiqueta.setLocation(0, 0);
+                        panelInferior.add(etiqueta);
+                        repaint();
+                        revalidate();
+                    }
+
                     segundoDisparo = false;
                     posicionRandom = rnd.nextInt(posiciones.size()-1);
                     disparoEnemigoX = posiciones.get(posicionRandom+1);
@@ -903,15 +939,16 @@ public class SpaceTest extends JFrame implements KeyListener{
 
 
     public boolean checarSiGanaste(){
-            for (int i = 0; i<mapa.length; i++){
-                for (int j = 0; j<mapa[0].length; j++){
-                    if (mapa[i][j] != 0){
-                        return false;
-                    }
+        for (int i = 0; i<mapa.length; i++){
+            for (int j = 0; j<mapa[0].length; j++){
+                if (mapa[i][j] != 0){
+                    return false;
                 }
             }
+        }
         return true;
     }
+
     public void reiniciarJuego(){
         pisoActual = 0;
         vidas = 3;
