@@ -91,11 +91,6 @@ public class SpaceTest extends JFrame implements KeyListener{
     EstrellaMuerteMov runnableEstrellaMuerte = new EstrellaMuerteMov();
     Thread threadEstrellaDeLaMuerte = new Thread(runnableEstrellaMuerte);
 
-
-
-
-
-
     int disparoWidth = 5; // ANCHO DEL DISPARO
     int disparoHeight = 15; // ALTO DEL DISPARO
     int bloqueActualizadorX = 0;
@@ -153,11 +148,7 @@ public class SpaceTest extends JFrame implements KeyListener{
         etiqueta.setLocation(0, 0);
         panelInferior.add(etiqueta);
 
-        /*
-        JLabel etiqueta2 = new JLabel(vida2);
-        etiqueta2.setSize(900, 50);
-        etiqueta2.setLocation(0, 0);
-         */
+
 
 
         this.setFocusable(true); // HACEMOS QUE SE PUEDA INTERACTUAR CON EL TECLADO
