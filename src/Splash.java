@@ -110,7 +110,7 @@ public class Splash extends JDialog {
                     while (x <= 100 && skipInt == true) {
                         barra.setValue(x);
                         x++;
-                        Thread.sleep(300); // 952 50
+                        Thread.sleep(952); // 952 50
 
                         if (x == 5) {
                             texto = "Cargando...";
