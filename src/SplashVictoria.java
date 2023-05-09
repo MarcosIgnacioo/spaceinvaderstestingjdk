@@ -24,6 +24,41 @@ public class SplashVictoria extends JDialog {
         inicioHilo();
     }
 
+    public class comoJugar extends JFrame {
+        public comoJugar() {
+            super("How to Play"); // título de la ventana
+            //Imagen de fondo
+            ImageIcon imagen = new ImageIcon("src//sprites//comoJugar.png");
+            JLabel etiqueta = new JLabel(imagen);
+
+            // Agrega la etiqueta al panel
+            etiqueta.setSize(1054, 900);
+            etiqueta.setLocation(0, 0);
+
+            setSize(1054, 900); // tamaño de la ventana
+            setLocationRelativeTo(null);
+            getContentPane().setLayout(null);
+            setUndecorated(true);
+            getContentPane().setBackground(Color.black);
+
+            JButton atras = new JButton("PLAY");
+            atras.setFont(new Font("Tahoma", Font.PLAIN, 18));
+            atras.setBackground(new Color(255, 255, 255));
+            atras.setBounds(448, 775, 135, 35);
+
+            atras.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    dispose();
+                    SpaceTest v1 = new SpaceTest();
+                    v1.setVisible(true);
+                    v1.setLocationRelativeTo(null);
+                }
+            });
+            add(atras);
+            add(etiqueta);
+        }
+    }
+
     //PROPIEDADES ELEMENTOS
     private void inicio() {
         //Imagen de fondo
@@ -138,6 +173,15 @@ public class SplashVictoria extends JDialog {
                             v1.setLocationRelativeTo(null);
                         }
                     });
+
+                    comoJugar.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent e) {
+                            dispose();
+                            comoJugar v1 = new comoJugar();
+                            v1.setVisible(true);
+                        }
+                    });
+
                     salir.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             dispose();

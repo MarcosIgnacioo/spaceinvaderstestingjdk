@@ -779,7 +779,7 @@ public class SpaceTest extends JFrame implements KeyListener{
                 if(!segundoDisparo){
                     AudioPlayer efecto = null;
                     if (efecto == null || !efecto.isPlaying()){
-                        efecto = new AudioPlayer("src//sonidos//disparoenemigo.wav",false);
+                        //efecto = new AudioPlayer("src//sonidos//disparoenemigo.wav",false);
                     }
                 }
                 if(disparoEnemigo !=null && !disparoEnemigo.colisionAbajo(jugadorSprite) &&

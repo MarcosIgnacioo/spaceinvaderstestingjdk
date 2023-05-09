@@ -60,7 +60,7 @@ public class Splash extends JDialog {
                 skipInt = false;
                 finalMusica.detener();
                 if (musicaMenu[0] == null || !musicaMenu[0].isPlaying()){
-                    musicaMenu[0] = new AudioPlayer("src//sonidos//menumusic.wav",true);
+                    //musicaMenu[0] = new AudioPlayer("src//sonidos//menumusic.wav",true);
                 }
             }
         });
@@ -119,7 +119,7 @@ public class Splash extends JDialog {
                     while (x <= 100 && skipInt == true) {
                         barra.setValue(x);
                         x++;
-                        Thread.sleep(952); // 952 50
+                        Thread.sleep(932); // 952 50
 
                         if (x == 5) {
                             texto = "Cargando...";
