@@ -443,7 +443,6 @@ public class SpaceTest extends JFrame implements KeyListener{
                     }
                 }
             }
-
         }
     }
 
@@ -745,10 +744,12 @@ public class SpaceTest extends JFrame implements KeyListener{
             Rect testSiVieneDeNave;
             while(juegoEncendido){
                 if (posiciones.size() == 0){
+                    pisoActual = 0;
+                    vidas = 3;
                     //GANASTE AQUI ESTA AZAAAAAAAAAAAAAAA GANAR EVENTO
                     JOptionPane.showMessageDialog(null,"Ganaste","GG", JOptionPane.INFORMATION_MESSAGE);
                     dispose();
-                    Splash newGamePlus = new Splash();
+                    SplashVictoria newGamePlus = new SplashVictoria();
                     newGamePlus.setVisible(true);
                     reiniciarJuego();
                 }
@@ -887,20 +888,22 @@ public class SpaceTest extends JFrame implements KeyListener{
                     e.printStackTrace();
                 }
                 if (pisoActual == 250){
+                    pisoActual = 0;
                     // PERDISTE EVENTO aqui esta owoo
+                    dispose();
                     JOptionPane.showMessageDialog(null,"Perdiste","GG", JOptionPane.INFORMATION_MESSAGE);
                     vidas = 3;
-                    dispose();
-                    Splash newGamePlus = new Splash();
+                    SplashDerrota newGamePlus = new SplashDerrota();
                     newGamePlus.setVisible(true);
                 }
                 if (vidas == 0){
+                    pisoActual = 0;
                     actualizarVidas();
                     // PERDISTE EVENTO aqui esta owoo
+                    dispose();
                     JOptionPane.showMessageDialog(null,"Perdiste","GG", JOptionPane.INFORMATION_MESSAGE);
                     vidas = 3;
-                    dispose();
-                    Splash newGamePlus = new Splash();
+                    SplashDerrota newGamePlus = new SplashDerrota();
                     newGamePlus.setVisible(true);
                 }
                 juegoEncendido = true;
