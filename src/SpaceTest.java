@@ -16,6 +16,8 @@ public class SpaceTest extends JFrame implements KeyListener{
     JFrame frame = new JFrame();
     JPanel reiniciarP = new JPanel();
     JPanel panelInferior = new JPanel();
+    JPanel panelVidas = new JPanel();
+    JPanel panelPuntos = new JPanel();
     //implementacion de las vidas y el puntaje
     int puntaje = 0, vidas = 3;
     int navesExplotadas = 0;
@@ -56,6 +58,7 @@ public class SpaceTest extends JFrame implements KeyListener{
 
     ImageIcon vida2 = new ImageIcon("src//sprites//vidas2.png");
     ImageIcon vidaUno = new ImageIcon("src//sprites//vidas3.png");
+    ImageIcon vidasNavesImgIc = new ImageIcon("src//sprites//naveproVidasIndicador.png");
 
     Rect disparoEnemigo = null;
     Rect disparo = null; // UNA VARIABLE RECT QUE SERA UTILIZADA PARA EL DISPARO
@@ -66,8 +69,6 @@ public class SpaceTest extends JFrame implements KeyListener{
     int estrellaW = 60;
     int estrellaH = 60;
     Color estrellaC = new Color(0, 0, 0, 0);
-
-    JLabel etiqueta;
 
     int disparoEnemigoX = jugadorX;
     int disparoEnemigoY = jugadorY;
@@ -98,6 +99,9 @@ public class SpaceTest extends JFrame implements KeyListener{
 
 
     JLabel tiempoLbl = new JLabel(); // JLabel para el tiempo nada mas
+    JLabel vidasTexto = new JLabel("Vidas: ");
+    JLabel[] vidasLbl = new JLabel[3];
+    JLabel puntajeLbl = new JLabel("Puntos: " + puntaje,JLabel.CENTER);
     Rect jugadorSprite; // Sprite para el jugador
 
     public SpaceTest() {
@@ -136,17 +140,38 @@ public class SpaceTest extends JFrame implements KeyListener{
         panelJuego.setPreferredSize(new Dimension(900, 900));
 
         //ELEMENTOS PARA EL PANEL INFERIOR
-        panelInferior.setLayout(null);
-        //panelInferior.setBackground(Color.decode("#2d2d2d"));
-        panelInferior.add(tiempoLbl, BorderLayout.WEST);
+        panelInferior.setLayout(new BorderLayout());
         panelInferior.setPreferredSize(new Dimension(500,50));
-
+        panelInferior.setBackground(Color.decode("#2d2d2d"));
+        panelVidas.setBackground(Color.decode("#2d2d2d"));
+        panelPuntos.setBackground(Color.decode("#2d2d2d"));
+        panelInferior.add(panelVidas, BorderLayout.WEST);
+        panelInferior.add(panelPuntos, BorderLayout.EAST);
+        panelVidas.setLayout(new FlowLayout());
+        panelPuntos.setLayout(new BorderLayout());
+        panelVidas.add(vidasTexto);
 
         //Imagen de fondo
-        etiqueta = new JLabel(vidaUno);
+        /*etiqueta = new JLabel(vidaUno);
         etiqueta.setSize(900, 50);
         etiqueta.setLocation(0, 0);
-        panelInferior.add(etiqueta);
+        panelInferior.add(etiqueta);*/
+
+        vidasTexto.setForeground(Color.WHITE);
+        vidasTexto.setFont(new Font("Arial", Font.BOLD, 24));
+
+        for (int i = 0; i<vidasLbl.length; i++){
+            vidasLbl[i] = new JLabel(vidasNavesImgIc);
+            vidasLbl[i].setPreferredSize(new Dimension(50,50));
+            vidasLbl[i].setLocation(i*70,0);
+            panelVidas.add(vidasLbl[i]);
+        }
+        puntajeLbl.setForeground(Color.WHITE);
+        puntajeLbl.setFont(new Font("Arial", Font.BOLD, 24));
+        actualizarPuntos();
+        panelPuntos.add(puntajeLbl, BorderLayout.CENTER);
+        panelInferior.repaint();
+        panelInferior.revalidate();
 
 
 
@@ -358,8 +383,6 @@ public class SpaceTest extends JFrame implements KeyListener{
             g.drawRect(jugadorSprite.x, jugadorSprite.y, jugadorSprite.w, jugadorSprite.h);
 
             g.setColor(Color.ORANGE);
-            g.drawString("Puntaje: "+puntaje, 10,10);
-            g.drawString("Vidas: "+vidas,10,30);
             estrellaDeLaMuerte = new Rect(estrellaX,estrellaY,estrellaW,estrellaH, estrellaC);
 
             estrellaDeLaMuerte = new Rect(estrellaX,estrellaY,estrellaW,estrellaH, estrellaC);
@@ -381,8 +404,6 @@ public class SpaceTest extends JFrame implements KeyListener{
                 g.setColor(disparoEnemigo.c);
                 g.fillRect(disparoEnemigoX, disparoEnemigoY, disparoEnemigoWidth, disparoEnemigoHeight);
             }
-
-
             //TAMANO DE LA NAVE ------------------------------------------------------------------------------------------------------------------------------
             for (int i = 0; i < mapa.length; i++){
                 for (int j = 0; j< columnas; j++){
@@ -515,8 +536,18 @@ public class SpaceTest extends JFrame implements KeyListener{
                         iColisioanda = i;
                         jColisionada = j;
                         //Implementacion de la obtencion de puntos
-                        if(mapa[i][j] != 7)
-                            puntaje += (100*mapa[i][j]);
+                        if(mapa[i][j] != 7){
+                            if (mapa[i][j] == 1){
+                                puntaje += 100;
+                            }
+                            else if (mapa[i][j] == 4){
+                                puntaje += 50;
+                            }
+                            else if (mapa[i][j] == 5){
+                                puntaje += 20;
+                            }
+                            actualizarPuntos();
+                        }
                         return true;
                     }
                 }
@@ -623,7 +654,7 @@ public class SpaceTest extends JFrame implements KeyListener{
                     hitParry = disparo.colisionArriba(disparoEnemigo);
                 }
                 try {
-                    Thread.sleep(7); // Espera 1 segundo
+                    Thread.sleep(15); // Espera 1 segundo
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -716,12 +747,9 @@ public class SpaceTest extends JFrame implements KeyListener{
                 if (posiciones.size() == 0){
                     //GANASTE AQUI ESTA AZAAAAAAAAAAAAAAA GANAR EVENTO
                     JOptionPane.showMessageDialog(null,"Ganaste","GG", JOptionPane.INFORMATION_MESSAGE);
-                    Izq = false;
-                    Der = false;
-                    posiciones = generadorDePosicionDeBalasEnemigasAleatorio();
-                    reiniciarJuego();
-                    posiciones = generadorDePosicionDeBalasEnemigasAleatorio();
-                    System.out.println("yea");
+                    dispose();
+                    Splash newGamePlus = new Splash();
+                    newGamePlus.setVisible(true);
                     reiniciarJuego();
                 }
                 testSiVieneDeNave = new Rect(disparoEnemigoX,disparoEnemigoY,disparoEnemigoWidth,disparoEnemigoHeight,Color.green);
@@ -734,7 +762,7 @@ public class SpaceTest extends JFrame implements KeyListener{
                     testSiVieneDeNave.y = disparoEnemigoY;
                 }
                 try {
-                    Thread.sleep(7); // Espera 1 segundo
+                    Thread.sleep(15); // Espera 1 segundo o dos
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -757,17 +785,7 @@ public class SpaceTest extends JFrame implements KeyListener{
                 else if (disparoEnemigo !=null && disparoEnemigo.colisionAbajo(jugadorSprite)){
                     //COLISION DISPARO CON EL JUGADOR
                     vidas--;
-
-                    if (vidas == 2){
-                        System.out.println("Hola");
-                        etiqueta = new JLabel(vida2);
-                        etiqueta.setSize(900, 50);
-                        etiqueta.setLocation(0, 0);
-                        panelInferior.add(etiqueta);
-                        repaint();
-                        revalidate();
-                    }
-
+                    actualizarVidas();
                     segundoDisparo = false;
                     posicionRandom = rnd.nextInt(posiciones.size()-1);
                     disparoEnemigoX = posiciones.get(posicionRandom+1);
@@ -820,7 +838,7 @@ public class SpaceTest extends JFrame implements KeyListener{
         public void run() {
             while (juegoEncendido){
                 try {
-                    Thread.sleep(3000); // Espera 1 segundo
+                    Thread.sleep(1000); // Espera 1 segundo
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -844,6 +862,7 @@ public class SpaceTest extends JFrame implements KeyListener{
                         mapa[i + 1][0] = mov;
                     }
                 }
+                System.out.println(pisoActual);
                 panelJuego.repaint();
                 panelJuego.revalidate();
                 generaMurosColisionadores();
@@ -867,13 +886,22 @@ public class SpaceTest extends JFrame implements KeyListener{
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                if (vidas == 0 || pisoActual > 350){
+                if (pisoActual == 250){
                     // PERDISTE EVENTO aqui esta owoo
                     JOptionPane.showMessageDialog(null,"Perdiste","GG", JOptionPane.INFORMATION_MESSAGE);
-                    Izq = false;
-                    Der = false;
-                    disparoEnemigo = null;
-                    reiniciarJuego();
+                    vidas = 3;
+                    dispose();
+                    Splash newGamePlus = new Splash();
+                    newGamePlus.setVisible(true);
+                }
+                if (vidas == 0){
+                    actualizarVidas();
+                    // PERDISTE EVENTO aqui esta owoo
+                    JOptionPane.showMessageDialog(null,"Perdiste","GG", JOptionPane.INFORMATION_MESSAGE);
+                    vidas = 3;
+                    dispose();
+                    Splash newGamePlus = new Splash();
+                    newGamePlus.setVisible(true);
                 }
                 juegoEncendido = true;
             }
@@ -939,12 +967,35 @@ public class SpaceTest extends JFrame implements KeyListener{
         }
         return true;
     }
+    public void actualizarVidas(){
+        System.out.println(vidas);
+
+        if (vidas < 4 && vidas > 0){
+            vidasLbl[vidas].setVisible(false);
+            panelInferior.revalidate();
+            panelInferior.repaint();
+        }
+        if (vidas == 0){
+            vidasLbl[vidas].setVisible(false);
+        }
+    }
+
+    public void actualizarPuntos(){
+        puntajeLbl.setText("Puntos: " + puntaje + "   ");
+    }
+    public void reiniciarVidas(){
+        for (int i = 0; i<vidasLbl.length; i++){
+            vidasLbl[i].setVisible(true);
+        }
+    }
 
     public void reiniciarJuego(){
         pisoActual = 0;
         vidas = 3;
         juegoEncendido = true;
         puntaje = 0;
+        actualizarPuntos();
+        reiniciarVidas();
         mapa = new int[][]{
                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
