@@ -662,7 +662,7 @@ public class SpaceTest extends JFrame implements KeyListener{
                     hitParry = disparo.colisionArriba(disparoEnemigo);
                 }
                 try {
-                    Thread.sleep(15); // Espera 1 segundo
+                    Thread.sleep(7); // Espera 1 segundo
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -756,7 +756,6 @@ public class SpaceTest extends JFrame implements KeyListener{
                     pisoActual = 0;
                     vidas = 3;
                     //GANASTE AQUI ESTA AZAAAAAAAAAAAAAAA GANAR EVENTO
-                    JOptionPane.showMessageDialog(null,"Ganaste","GG", JOptionPane.INFORMATION_MESSAGE);
                     dispose();
                     SplashVictoria newGamePlus = new SplashVictoria();
                     newGamePlus.setVisible(true);
@@ -772,7 +771,7 @@ public class SpaceTest extends JFrame implements KeyListener{
                     testSiVieneDeNave.y = disparoEnemigoY;
                 }
                 try {
-                    Thread.sleep(15); // Espera 1 segundo o dos
+                    Thread.sleep(10); // Espera 1 segundo o dos
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -917,7 +916,6 @@ public class SpaceTest extends JFrame implements KeyListener{
                     pisoActual = 0;
                     // PERDISTE EVENTO aqui esta owoo
                     dispose();
-                    JOptionPane.showMessageDialog(null,"Perdiste","GG", JOptionPane.INFORMATION_MESSAGE);
                     vidas = 3;
                     SplashDerrota newGamePlus = new SplashDerrota();
                     newGamePlus.setVisible(true);
@@ -927,7 +925,6 @@ public class SpaceTest extends JFrame implements KeyListener{
                     actualizarVidas();
                     // PERDISTE EVENTO aqui esta owoo
                     dispose();
-                    JOptionPane.showMessageDialog(null,"Perdiste","GG", JOptionPane.INFORMATION_MESSAGE);
                     vidas = 3;
                     SplashDerrota newGamePlus = new SplashDerrota();
                     newGamePlus.setVisible(true);
@@ -980,7 +977,7 @@ public class SpaceTest extends JFrame implements KeyListener{
     }
     public void checarSiPerdiste(){
         if (pisoActual == 558 || vidas == 0){
-            JOptionPane.showMessageDialog(null, "Perdist", "P", JOptionPane.INFORMATION_MESSAGE);
+            //JOptionPane.showMessageDialog(null, "Perdist", "P", JOptionPane.INFORMATION_MESSAGE);
             reiniciarJuego();
         }
     }

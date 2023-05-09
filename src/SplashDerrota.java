@@ -46,7 +46,7 @@ public class SplashDerrota extends JDialog {
         skipIntro.setBackground(new Color(255, 255, 255));
         skipIntro.setBounds(353, 735, 135, 35);
 
-        JButton salirJuego = new JButton("EXIT");
+        JButton salirJuego = new JButton("SALIR");
         salirJuego.setFont(new Font("Tahoma", Font.PLAIN, 18));
         salirJuego.setBackground(new Color(255, 255, 255));
         salirJuego.setBounds(549, 735, 135, 35);
@@ -91,7 +91,7 @@ public class SplashDerrota extends JDialog {
             setUndecorated(true);
             getContentPane().setBackground(Color.black);
 
-            JButton atras = new JButton("PLAY");
+            JButton atras = new JButton("JUGAR");
             atras.setFont(new Font("Tahoma", Font.PLAIN, 18));
             atras.setBackground(new Color(255, 255, 255));
             atras.setBounds(448, 775, 135, 35);
@@ -139,17 +139,17 @@ public class SplashDerrota extends JDialog {
                     etiqueta.setSize(1054, 900);
                     etiqueta.setLocation(0, 0);
 
-                    JButton play = new JButton("PLAY");
+                    JButton play = new JButton("JUGAR");
                     play.setFont(new Font("Tahoma", Font.PLAIN, 18));
                     play.setBackground(new Color(255, 255, 255));
                     play.setBounds(57, 405, 335, 45);
 
-                    JButton comoJugar = new JButton("HOW TO PLAY");
+                    JButton comoJugar = new JButton("¿CÓMO JUGAR?");
                     comoJugar.setFont(new Font("Tahoma", Font.PLAIN, 18));
                     comoJugar.setBackground(new Color(255, 255, 255));
                     comoJugar.setBounds(241, 536, 335, 45);
 
-                    JButton salir = new JButton("EXIT GAME");
+                    JButton salir = new JButton("SALIR");
                     salir.setFont(new Font("Tahoma", Font.PLAIN, 18));
                     salir.setBackground(new Color(255, 255, 255));
                     salir.setBounds(389, 685, 335, 45);
