@@ -9,6 +9,8 @@ public class Splash extends JDialog {
     private JLabel l2;
     private boolean skipInt = true;
 
+    final AudioPlayer[] musica = {null};
+    final AudioPlayer[] musicaMenu = {null};
     //PROPIEDADES DIALOOGO
     public Splash() {
         inicio();
@@ -45,6 +47,10 @@ public class Splash extends JDialog {
         skipIntro.setBackground(new Color(255, 255, 255));
         skipIntro.setBounds(800, 775, 135, 35);
 
+        if (musica[0] == null || !musica[0].isPlaying()){
+            musica[0] = new AudioPlayer("src//sonidos//starswarstheme.wav",true);
+        }
+        AudioPlayer finalMusica = musica[0];
         skipIntro.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //dispose();
@@ -52,15 +58,17 @@ public class Splash extends JDialog {
                 //skip.setVisible(true);
                 //inicioHilo();
                 skipInt = false;
+                finalMusica.detener();
+                if (musicaMenu[0] == null || !musicaMenu[0].isPlaying()){
+                    musicaMenu[0] = new AudioPlayer("src//sonidos//menumusic.wav",true);
+                }
             }
         });
         add(skipIntro);
-
         l2 = new JLabel();
         l2.setFont(new Font("Tahoma", Font.PLAIN,18));
         l2.setBounds(260,810,300,300);
         getContentPane().add(l2);
-
         getContentPane().add(etiqueta);
     }
 
@@ -104,6 +112,7 @@ public class Splash extends JDialog {
         Thread hilo = new Thread(new Runnable() {
             int x = 0;
             String texto = " ";
+            AudioPlayer finalMusica = musica[0];
 
             public void run() {
                 try {
@@ -119,8 +128,9 @@ public class Splash extends JDialog {
                             texto = "Iniciando...";
                             l2.setText(texto);
                         }
-
                     }
+                    finalMusica.detener();
+                    musicaMenu[0] = new AudioPlayer("src//sonidos//menumusic.wav",true);
 
                     ImageIcon imagen = new ImageIcon("src//sprites//MenuPro.png");
                     // Crea el objeto JLabel
